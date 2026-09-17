@@ -36,6 +36,12 @@ function updateWhatsApp(){
  $('whatsapp-trip').href='https://wa.me/919677075741?text='+encodeURIComponent(message);
 }
 $('car').addEventListener('change',updateWhatsApp);
+function trackLead(){
+  const payload={event_category:'enquiry'};
+  if(typeof window.gtag==='function'){window.gtag('event','generate_lead',payload);}
+  else{window.dataLayer=window.dataLayer||[];window.dataLayer.push(Object.assign({event:'generate_lead'},payload));}
+}
+$('whatsapp-trip').addEventListener('click',trackLead);
 if(document.modelContext?.registerTool){
  try{Promise.resolve(document.modelContext.registerTool({name:'prepare_taxi_enquiry',description:'Fill the visible one-way taxi trip form for review. Does not book a taxi or send any message.',inputSchema:{type:'object',properties:{pickup:{type:'string'},drop:{type:'string'},date:{type:'string'},time:{type:'string'}},required:['pickup','drop','date','time'],additionalProperties:false},annotations:{readOnlyHint:false},execute(input){
  const {pickup,drop,date,time}=input;
