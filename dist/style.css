@@ -11,3 +11,18 @@
 .contact-float a:hover{transform:translateY(-2px)}
 #trip-dialog[open]~.contact-float{visibility:hidden;pointer-events:none}
 @media(max-width:650px){.contact-float{right:12px;bottom:16px}.contact-float a{width:50px;height:50px}}
+.booking-fields{display:grid;grid-template-columns:minmax(0,1.2fr) 36px minmax(0,1.2fr) minmax(140px,.95fr) minmax(120px,.85fr);grid-template-areas:"from swap to date time" "car car car cta cta";gap:12px;align-items:stretch}
+.field-from{grid-area:from}.field-to{grid-area:to}.field-date{grid-area:date}.field-time{grid-area:time}.field-car{grid-area:car}
+.booking-fields label.field-from,.booking-fields label.field-to,.booking-fields label.field-date,.booking-fields label.field-time,.booking-fields label.field-car{grid-column:unset;grid-row:unset}
+#swap{grid-area:swap;align-self:center;justify-self:center}
+.booking-fields>.primary{grid-area:cta;width:100%;grid-column:unset}
+.booking-fields select{display:block;width:100%;margin:0;padding:0;border:0;background:transparent;font-size:14px;color:var(--ink);outline:none}
+@media(max-width:1000px){.booking-fields{grid-template-columns:minmax(0,1fr) 36px minmax(0,1fr);grid-template-areas:"from swap to" "date date time" "car car car" "cta cta cta"}}
+@media(max-width:650px){
+.booking-card{padding:20px 18px 22px;margin-right:0}
+.booking-fields{grid-template-columns:1fr 1fr;grid-template-areas:"from from" "swap swap" "to to" "date time" "car car" "cta cta";gap:10px}
+#swap{width:42px;height:42px}
+.booking-fields label{padding:12px 12px;min-height:64px}
+.booking-fields input,.booking-fields select{font-size:16px}
+.form-note{line-height:1.6}
+}

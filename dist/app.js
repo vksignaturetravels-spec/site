@@ -1,15 +1,19 @@
 const $ = (id) => document.getElementById(id);
 const form = $('booking-form');
 const dialog = $('trip-dialog');
+const pad = (n) => String(n).padStart(2,'0');
+const isoDay = (d) => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
 const today = new Date();
-const localDay = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
-$('date').min = localDay;
-$('date').value = localDay;
+const pickupAt = new Date(today.getTime() + 60*60*1000);
+pickupAt.setMinutes(0,0,0);
+$('date').min = isoDay(today);
+$('date').value = isoDay(pickupAt);
+$('time').value = `${pad(pickupAt.getHours())}:${pad(pickupAt.getMinutes())}`;
 $('year').textContent = today.getFullYear();
 let trip = null;
 $('swap').addEventListener('click', () => { const old = $('pickup').value; $('pickup').value = $('drop').value; $('drop').value = old; });
 document.querySelectorAll('[data-from]').forEach(button => button.addEventListener('click', () => { $('pickup').value = button.dataset.from; $('drop').value = button.dataset.to; $('journey').scrollIntoView({behavior:'smooth'}); $('date').focus({preventScroll:true}); }));
-document.querySelectorAll('[data-car]').forEach(button => button.addEventListener('click', () => { $('car').value = button.dataset.car; $('journey').scrollIntoView({behavior:'smooth'}); $('pickup').focus({preventScroll:true}); }));
+document.querySelectorAll('[data-car]').forEach(button => button.addEventListener('click', () => { $('car').value = button.dataset.car; $('journey').scrollIntoView({behavior:'smooth'}); $('car').focus({preventScroll:true}); }));
 form.addEventListener('submit', event => {
  event.preventDefault();
  const from = $('pickup').value.trim(), to = $('drop').value.trim();
@@ -19,7 +23,7 @@ form.addEventListener('submit', event => {
  if(new Date(`${$('date').value}T${$('time').value}`) <= new Date()){ $('form-error').textContent = 'Please choose a pickup date and time in the future.'; return; }
  trip = {from,to,date:$('date').value,time:$('time').value};
  updateWhatsApp();
- $('trip-summary').textContent = `${from} → ${to}\n${new Date(trip.date+'T12:00:00').toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'})} · ${trip.time}\nOne-way / Drop taxi`;
+ $('trip-summary').textContent = `${from} → ${to}\n${new Date(trip.date+'T12:00:00').toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'})} · ${trip.time}\n${selectedCarDetails()}\nOne-way / Drop taxi`;
  document.querySelector('.saved-message').textContent = '';
  dialog.showModal();
 });
