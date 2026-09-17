@@ -23,9 +23,12 @@ form.addEventListener('submit', event => {
  document.querySelector('.saved-message').textContent = '';
  dialog.showModal();
 });
+function selectedCarDetails(){
+ return $('car').selectedOptions[0].textContent;
+}
 function updateWhatsApp(){
  if(!trip)return;
- const message=`Hello VK Signature Travels, I would like a quote for a one-way drop taxi.\nPickup: ${trip.from}\nDrop: ${trip.to}\nDate: ${trip.date}\nTime: ${trip.time}\nPreferred car: ${$('car').value}\nPlease confirm availability and the total fare including applicable charges.`;
+ const message=`Hello VK Signature Travels, I would like a quote for a one-way drop taxi.\nPickup: ${trip.from}\nDrop: ${trip.to}\nDate: ${trip.date}\nTime: ${trip.time}\nPreferred car: ${selectedCarDetails()}\nPlease confirm availability and the total fare including applicable charges.`;
  $('whatsapp-trip').href='https://wa.me/919677075741?text='+encodeURIComponent(message);
 }
 $('car').addEventListener('change',updateWhatsApp);
@@ -40,7 +43,7 @@ document.querySelector('.close-dialog').addEventListener('click',()=>dialog.clos
 dialog.addEventListener('click', event => {if(event.target === dialog){const rect=dialog.getBoundingClientRect();if(event.clientX<rect.left||event.clientX>rect.right||event.clientY<rect.top||event.clientY>rect.bottom)dialog.close();}});
 $('save-trip').addEventListener('click',()=>{
  if(!trip)return;
- const text=`VK Signature Travels — Trip enquiry\n\nPickup: ${trip.from}\nDrop: ${trip.to}\nDate: ${trip.date}\nTime: ${trip.time}\nCar: ${$('car').value}\nTrip: One-way / Drop taxi\n\nThis is an enquiry draft, not a confirmed booking. Availability and total fare must be confirmed with the booking team.`;
+ const text=`VK Signature Travels — Trip enquiry\n\nPickup: ${trip.from}\nDrop: ${trip.to}\nDate: ${trip.date}\nTime: ${trip.time}\nCar: ${selectedCarDetails()}\nTrip: One-way / Drop taxi\n\nThis is an enquiry draft, not a confirmed booking. Availability and total fare must be confirmed with the booking team.`;
  const url=URL.createObjectURL(new Blob([text],{type:'text/plain;charset=utf-8'}));
  const link=document.createElement('a');link.href=url;link.download='vk-signature-trip.txt';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
  document.querySelector('.saved-message').textContent='Trip details saved. Your booking is not yet confirmed.';
