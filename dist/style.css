@@ -26,3 +26,14 @@
 .booking-fields input,.booking-fields select{font-size:16px}
 .form-note{line-height:1.6}
 }
+.trip-toggle{display:flex;gap:8px;flex-shrink:0}
+.trip-option{display:flex;align-items:center;gap:7px;padding:9px 13px;border:1px solid var(--line);border-radius:5px;font-size:13px;cursor:pointer;background:#fff;color:var(--ink)}
+.trip-option:has(input:checked){background:#edf3e8;border-color:#c5d6b8;color:var(--green);font-weight:600}
+.trip-option input{accent-color:var(--green);margin:0}
+.tariffs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0}
+.tariff-kind{font-size:10px;letter-spacing:1.2px;color:#788663;font-weight:700}
+.tariffs .vehicle-price{margin:6px 0 0;font-size:28px}
+@media(max-width:650px){
+.trip-toggle{margin-top:14px;flex-wrap:wrap}
+.trip-option{font-size:12px;padding:8px 11px}
+}
