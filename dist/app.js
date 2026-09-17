@@ -48,3 +48,6 @@ $('save-trip').addEventListener('click',()=>{
  const link=document.createElement('a');link.href=url;link.download='vk-signature-trip.txt';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
  document.querySelector('.saved-message').textContent='Trip details saved. Your booking is not yet confirmed.';
 });
+const hideNetlifyHud=()=>{['nl-badge-frame','nl-hud-frame'].forEach(id=>document.getElementById(id)?.remove());};
+hideNetlifyHud();
+new MutationObserver(hideNetlifyHud).observe(document.documentElement,{childList:true,subtree:true});
