@@ -70,9 +70,20 @@ function selectedCarDetails() {
 }
 function updateLiveEstimate() {
   const el = $('live-estimate');
-  if (!el) return;
   const from = $('pickup')?.value.trim() || '';
   const to = $('drop')?.value.trim() || '';
+  const match = from && to && from.toLowerCase() !== to.toLowerCase() ? window.VK_routeByCities?.(from, to) : null;
+  const car = selectedCar();
+  const round = isRoundTrip();
+  const rate = carRate(car, round);
+  if ($('fare-amount') && match) {
+    $('fare-amount').textContent = window.VK_formatInr(match.km * rate);
+  } else if ($('fare-amount')) {
+    $('fare-amount').textContent = '—';
+  }
+  if ($('rate-tag')) $('rate-tag').textContent = `₹${rate}/km`;
+  if ($('trip-kind-label')) $('trip-kind-label').textContent = round ? 'Round trip' : 'One-way / Drop';
+  if (!el) return;
   if (!from || !to || from.toLowerCase() === to.toLowerCase()) {
     el.textContent = 'Enter two cities to see a rough base fare for popular routes.';
     return;
