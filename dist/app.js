@@ -162,18 +162,41 @@ function haversineKm(a, b) {
 const MIN_ONE_WAY_KM = 130;
 const MIN_ROUND_TRIP_KM = 250;
 
+function samePlace(from, to) {
+  const a = String(from || '').trim().toLowerCase();
+  const b = String(to || '').trim().toLowerCase();
+  if (!a || !b) return false;
+  if (a === b) return true;
+  const cities = Object.keys(window.VK_CITY_COORDS || {}).sort((x, y) => y.length - x.length);
+  for (const city of cities) {
+    if (window.VK_placeHasCity?.(a, city) && window.VK_placeHasCity?.(b, city)) return true;
+  }
+  return false;
+}
+
 function formatEstimateLine(oneWayKm, source) {
   const car = selectedCar();
   const round = isRoundTrip();
   const rate = carRate(car, round);
   const leg = Math.max(1, Math.round(oneWayKm));
   const rawBillable = round ? leg * 2 : leg;
-  const billableKm = round ? Math.max(rawBillable, MIN_ROUND_TRIP_KM) : Math.max(rawBillable, MIN_ONE_WAY_KM);
-  const usedMin = billableKm > rawBillable;
+  const billableKm =
+    source === 'local'
+      ? round
+        ? MIN_ROUND_TRIP_KM
+        : MIN_ONE_WAY_KM
+      : round
+        ? Math.max(rawBillable, MIN_ROUND_TRIP_KM)
+        : Math.max(rawBillable, MIN_ONE_WAY_KM);
+  const usedMin = billableKm > rawBillable || source === 'local';
   const base = billableKm * rate;
   const label = round ? 'round-trip base' : 'one-way base';
   let dist;
-  if (round) {
+  if (source === 'local') {
+    dist = round
+      ? `same-city package · ${billableKm} km min`
+      : `same-city / local · ${billableKm} km min`;
+  } else if (round) {
     dist = usedMin
       ? `~${leg} km each way · billed ${billableKm} km min`
       : `~${leg} km each way · ~${billableKm} km total`;
@@ -190,13 +213,20 @@ function formatEstimateLine(oneWayKm, source) {
 }
 
 function applyKmEstimate(oneWayKm, source) {
-  if (!Number.isFinite(oneWayKm) || oneWayKm <= 0) return false;
+  if (source !== 'local' && (!Number.isFinite(oneWayKm) || oneWayKm <= 0)) return false;
   const car = selectedCar();
   const round = isRoundTrip();
   const rate = carRate(car, round);
-  const leg = Math.max(1, Math.round(oneWayKm));
+  const leg = source === 'local' ? (round ? MIN_ROUND_TRIP_KM / 2 : MIN_ONE_WAY_KM) : Math.max(1, Math.round(oneWayKm));
   const rawBillable = round ? leg * 2 : leg;
-  const billableKm = round ? Math.max(rawBillable, MIN_ROUND_TRIP_KM) : Math.max(rawBillable, MIN_ONE_WAY_KM);
+  const billableKm =
+    source === 'local'
+      ? round
+        ? MIN_ROUND_TRIP_KM
+        : MIN_ONE_WAY_KM
+      : round
+        ? Math.max(rawBillable, MIN_ROUND_TRIP_KM)
+        : Math.max(rawBillable, MIN_ONE_WAY_KM);
   const base = billableKm * rate;
   lastEstimate = {
     km: leg,
@@ -314,10 +344,19 @@ function updateLiveEstimate() {
   const round = isRoundTrip();
   const rate = carRate(car, round);
   if ($('rate-tag')) $('rate-tag').textContent = `₹${rate}/km`;
-  if ($('trip-kind-label')) $('trip-kind-label').textContent = round ? 'Round trip' : 'One-way / Drop';
+  if ($('trip-kind-label')) {
+    $('trip-kind-label').textContent = round
+      ? `Round trip · min ${MIN_ROUND_TRIP_KM} km`
+      : `One-way · min ${MIN_ONE_WAY_KM} km`;
+  }
 
-  if (!from || !to || from.toLowerCase() === to.toLowerCase()) {
+  if (!from || !to) {
     clearEstimate('Search pickup and drop to see a rough base fare.');
+    return;
+  }
+
+  if (samePlace(from, to)) {
+    applyKmEstimate(round ? MIN_ROUND_TRIP_KM / 2 : MIN_ONE_WAY_KM, 'local');
     return;
   }
 
@@ -417,10 +456,6 @@ form?.addEventListener('submit', (event) => {
     $('form-error').textContent = 'Please choose both pickup and drop locations.';
     return;
   }
-  if (from.toLowerCase() === to.toLowerCase()) {
-    $('form-error').textContent = 'Choose a different drop location.';
-    return;
-  }
   if (new Date(`${$('date').value}T${$('time').value}`) <= new Date()) {
     $('form-error').textContent = 'Please choose a pickup date and time in the future.';
     return;
@@ -477,13 +512,12 @@ if (document.modelContext?.registerTool) {
             typeof drop !== 'string' ||
             !pickup.trim() ||
             !drop.trim() ||
-            pickup.trim().toLowerCase() === drop.trim().toLowerCase() ||
             !/^\d{4}-\d{2}-\d{2}$/.test(date) ||
             !/^([01]\d|2[0-3]):[0-5]\d$/.test(time) ||
             !Number.isFinite(Date.parse(date + 'T' + time)) ||
             new Date(date + 'T' + time) <= new Date()
           )
-            throw new Error('Provide distinct cities and a valid future pickup date and time.');
+            throw new Error('Provide pickup, drop, and a valid future pickup date and time.');
           $('pickup').value = pickup.trim();
           $('drop').value = drop.trim();
           $('date').value = date;
