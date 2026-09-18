@@ -29,6 +29,22 @@ function placeLabel(place, fallback) {
   return place.formatted_address || place.name || fallback || '';
 }
 
+function restoreLocationInput(input, id) {
+  if (!input) return;
+  const broken =
+    input.disabled ||
+    input.readOnly ||
+    /oops|something went wrong/i.test(input.placeholder || '');
+  if (!broken) return;
+  input.disabled = false;
+  input.readOnly = false;
+  input.placeholder = id === 'pickup' ? 'Search pickup location' : 'Search drop location';
+}
+
+function hardenLocationInputs() {
+  ['pickup', 'drop'].forEach((id) => restoreLocationInput($(id), id));
+}
+
 function bindPlaceAutocomplete() {
   if (!window.google?.maps?.places) return;
   const opts = {
@@ -40,22 +56,40 @@ function bindPlaceAutocomplete() {
     if (!input || input.dataset.placesBound === '1') return;
     input.dataset.placesBound = '1';
     input.setAttribute('autocomplete', 'off');
-    const ac = new google.maps.places.Autocomplete(input, opts);
-    ac.addListener('place_changed', () => {
-      const place = ac.getPlace();
-      placeFields[id] = place || null;
-      const label = placeLabel(place, input.value.trim());
-      if (label) input.value = label;
-      updateLiveEstimate();
-    });
+    try {
+      const ac = new google.maps.places.Autocomplete(input, opts);
+      ac.addListener('place_changed', () => {
+        const place = ac.getPlace();
+        placeFields[id] = place || null;
+        const label = placeLabel(place, input.value.trim());
+        if (label) input.value = label;
+        updateLiveEstimate();
+      });
+    } catch (err) {
+      console.warn('Places autocomplete unavailable', err);
+      restoreLocationInput(input, id);
+    }
     input.addEventListener('input', () => {
       placeFields[id] = null;
+      restoreLocationInput(input, id);
     });
   });
+  hardenLocationInputs();
+  setTimeout(hardenLocationInputs, 500);
+  setTimeout(hardenLocationInputs, 2000);
+  setInterval(hardenLocationInputs, 3000);
 }
 
 function loadGooglePlaces() {
   if (!$('pickup') || !$('drop')) return;
+  window.gm_authFailure = () => {
+    hardenLocationInputs();
+    const el = $('live-estimate');
+    if (el) {
+      el.textContent =
+        'Google location search is unavailable (API key / Places API). You can still type addresses manually.';
+    }
+  };
   if (window.google?.maps?.places) {
     bindPlaceAutocomplete();
     return;
@@ -71,6 +105,7 @@ function loadGooglePlaces() {
     encodeURIComponent(VK_MAPS_KEY) +
     '&libraries=places&callback=initVkPlaces&loading=async';
   script.onerror = () => {
+    hardenLocationInputs();
     const el = $('live-estimate');
     if (el && !el.dataset.mapsError) {
       el.dataset.mapsError = '1';
