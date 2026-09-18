@@ -102,5 +102,43 @@ window.VK_placeHasCity = (place, city) => {
   });
 };
 
+window.VK_CITY_COORDS = {
+  chennai: { lat: 13.0827, lng: 80.2707 },
+  madras: { lat: 13.0827, lng: 80.2707 },
+  coimbatore: { lat: 11.0168, lng: 76.9558 },
+  kovai: { lat: 11.0168, lng: 76.9558 },
+  madurai: { lat: 9.9252, lng: 78.1198 },
+  trichy: { lat: 10.7905, lng: 78.7047 },
+  tiruchirappalli: { lat: 10.7905, lng: 78.7047 },
+  tiruchirapalli: { lat: 10.7905, lng: 78.7047 },
+  salem: { lat: 11.6643, lng: 78.146 },
+  ooty: { lat: 11.4102, lng: 76.695 },
+  udhagamandalam: { lat: 11.4102, lng: 76.695 },
+  erode: { lat: 11.341, lng: 77.7172 },
+  tirunelveli: { lat: 8.7139, lng: 77.7567 },
+  thanjavur: { lat: 10.787, lng: 79.1378 },
+  vellore: { lat: 12.9165, lng: 79.1325 },
+  kanyakumari: { lat: 8.0883, lng: 77.5385 },
+  tiruppur: { lat: 11.1085, lng: 77.3411 },
+  dindigul: { lat: 10.3624, lng: 77.9754 },
+  rameswaram: { lat: 9.2876, lng: 79.3129 },
+  kodaikanal: { lat: 10.2381, lng: 77.4892 },
+  kodai: { lat: 10.2381, lng: 77.4892 },
+  karur: { lat: 10.9601, lng: 78.0766 },
+  hosur: { lat: 12.7409, lng: 77.8253 },
+  cuddalore: { lat: 11.748, lng: 79.7714 },
+  munnar: { lat: 10.0889, lng: 77.0595 }
+};
+
+window.VK_coordsFromPlaceText = (place) => {
+  const text = String(place || '').toLowerCase();
+  if (!text) return null;
+  const keys = Object.keys(window.VK_CITY_COORDS).sort((a, b) => b.length - a.length);
+  for (const key of keys) {
+    if (window.VK_placeHasCity(text, key)) return window.VK_CITY_COORDS[key];
+  }
+  return null;
+};
+
 window.VK_routeByCities = (from, to) =>
   window.VK_ROUTES.find((r) => window.VK_placeHasCity(from, r.from) && window.VK_placeHasCity(to, r.to));

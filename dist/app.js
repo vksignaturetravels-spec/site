@@ -85,7 +85,7 @@ function loadGooglePlaces() {
   window.gm_authFailure = () => {
     hardenLocationInputs();
     const el = $('live-estimate');
-    if (el) {
+    if (el && !lastEstimate && ($('fare-amount')?.textContent === '—' || !$('fare-amount')?.textContent)) {
       el.textContent =
         'Google location search is unavailable (API key / Places API). You can still type addresses manually.';
     }
@@ -136,16 +136,174 @@ function carRate(car, round) {
   if (car.owMin != null) return round ? car.owMin - 1 : car.owMin;
   return round ? car.ow - 1 : car.ow;
 }
-function estimateLine(from, to) {
-  const match = window.VK_routeByCities?.(from, to);
-  if (!match) return '';
+
+let estimateSeq = 0;
+let lastEstimate = null;
+
+function latLngOf(place) {
+  const loc = place?.geometry?.location;
+  if (!loc) return null;
+  return {
+    lat: typeof loc.lat === 'function' ? loc.lat() : Number(loc.lat),
+    lng: typeof loc.lng === 'function' ? loc.lng() : Number(loc.lng)
+  };
+}
+
+function haversineKm(a, b) {
+  const toRad = (d) => (d * Math.PI) / 180;
+  const dLat = toRad(b.lat - a.lat);
+  const dLng = toRad(b.lng - a.lng);
+  const x =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(a.lat)) * Math.cos(toRad(b.lat)) * Math.sin(dLng / 2) ** 2;
+  return 6371 * 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1 - x));
+}
+
+function formatEstimateLine(km, source) {
   const car = selectedCar();
   const round = isRoundTrip();
   const rate = carRate(car, round);
-  const base = match.km * rate;
+  const base = Math.round(km) * rate;
   const label = round ? 'round-trip base' : 'one-way base';
-  return `Approx. ${label} for ~${match.km} km at ₹${rate}/km (${car.id}): ${window.VK_formatInr(base)}. Tolls, driver bata, parking and night charges are extra — confirmed on WhatsApp.`;
+  const how =
+    source === 'table'
+      ? `~${Math.round(km)} km`
+      : source === 'driving'
+        ? `~${Math.round(km)} km driving`
+        : `~${Math.round(km)} km (approx)`;
+  return `Approx. ${label} for ${how} at ₹${rate}/km (${car.id}): ${window.VK_formatInr(base)}. Tolls, driver bata, parking and night charges are extra — confirmed on WhatsApp.`;
 }
+
+function applyKmEstimate(km, source) {
+  if (!Number.isFinite(km) || km <= 0) return false;
+  const car = selectedCar();
+  const round = isRoundTrip();
+  const rate = carRate(car, round);
+  const rounded = Math.max(1, Math.round(km));
+  const base = rounded * rate;
+  lastEstimate = { km: rounded, source, text: formatEstimateLine(rounded, source) };
+  if ($('fare-amount')) $('fare-amount').textContent = window.VK_formatInr(base);
+  if ($('rate-tag')) $('rate-tag').textContent = `₹${rate}/km`;
+  if ($('trip-kind-label')) $('trip-kind-label').textContent = round ? 'Round trip' : 'One-way / Drop';
+  if ($('live-estimate')) $('live-estimate').textContent = lastEstimate.text;
+  return true;
+}
+
+function clearEstimate(message) {
+  lastEstimate = null;
+  if ($('fare-amount')) $('fare-amount').textContent = '—';
+  if ($('live-estimate') && message) $('live-estimate').textContent = message;
+}
+
+function estimateLine(from, to) {
+  if (lastEstimate?.text) return lastEstimate.text;
+  const match = window.VK_routeByCities?.(from, to);
+  if (!match) return '';
+  return formatEstimateLine(match.km, 'table');
+}
+
+function requestDrivingKm(origin, destination, seq) {
+  if (!window.google?.maps?.DistanceMatrixService) return;
+  const service = new google.maps.DistanceMatrixService();
+  service.getDistanceMatrix(
+    {
+      origins: [origin],
+      destinations: [destination],
+      travelMode: google.maps.TravelMode.DRIVING,
+      unitSystem: google.maps.UnitSystem.METRIC
+    },
+    (response, status) => {
+      if (seq !== estimateSeq) return;
+      const el = response?.rows?.[0]?.elements?.[0];
+      if (status !== 'OK' || el?.status !== 'OK' || !el.distance?.value) return;
+      applyKmEstimate(el.distance.value / 1000, 'driving');
+    }
+  );
+}
+
+function geocodeAddress(address) {
+  return new Promise((resolve) => {
+    if (!window.google?.maps?.Geocoder) {
+      resolve(null);
+      return;
+    }
+    new google.maps.Geocoder().geocode(
+      { address, componentRestrictions: { country: 'in' } },
+      (results, status) => {
+        if (status !== 'OK' || !results?.[0]?.geometry?.location) {
+          resolve(null);
+          return;
+        }
+        resolve(latLngOf({ geometry: results[0].geometry }));
+      }
+    );
+  });
+}
+
+async function resolveDistanceKm(from, to, seq) {
+  const known = window.VK_routeByCities?.(from, to);
+  if (known) {
+    applyKmEstimate(known.km, 'table');
+    return;
+  }
+
+  const fromLL = latLngOf(placeFields.pickup) || window.VK_coordsFromPlaceText?.(from);
+  const toLL = latLngOf(placeFields.drop) || window.VK_coordsFromPlaceText?.(to);
+  if (fromLL && toLL) {
+    applyKmEstimate(haversineKm(fromLL, toLL) * 1.3, 'approx');
+    requestDrivingKm(fromLL, toLL, seq);
+    return;
+  }
+
+  if ($('fare-amount')) $('fare-amount').textContent = '…';
+  if ($('live-estimate')) $('live-estimate').textContent = 'Calculating rough distance…';
+
+  if (window.google?.maps?.DistanceMatrixService) {
+    requestDrivingKm(from, to, seq);
+  }
+
+  if (window.google?.maps?.Geocoder) {
+    const [a, b] = await Promise.all([geocodeAddress(from), geocodeAddress(to)]);
+    if (seq !== estimateSeq) return;
+    if (a && b) {
+      if (!lastEstimate || lastEstimate.source !== 'driving') {
+        applyKmEstimate(haversineKm(a, b) * 1.3, 'approx');
+      }
+      requestDrivingKm(a, b, seq);
+      return;
+    }
+  }
+
+  if (seq !== estimateSeq) return;
+  if (!lastEstimate) {
+    clearEstimate('Custom route — we will confirm distance and the full fare on WhatsApp.');
+  }
+}
+
+function updateLiveEstimate() {
+  const from = $('pickup')?.value.trim() || '';
+  const to = $('drop')?.value.trim() || '';
+  const car = selectedCar();
+  const round = isRoundTrip();
+  const rate = carRate(car, round);
+  if ($('rate-tag')) $('rate-tag').textContent = `₹${rate}/km`;
+  if ($('trip-kind-label')) $('trip-kind-label').textContent = round ? 'Round trip' : 'One-way / Drop';
+
+  if (!from || !to || from.toLowerCase() === to.toLowerCase()) {
+    clearEstimate('Search pickup and drop to see a rough base fare.');
+    return;
+  }
+
+  const seq = ++estimateSeq;
+  const known = window.VK_routeByCities?.(from, to);
+  if (known) {
+    applyKmEstimate(known.km, 'table');
+    return;
+  }
+
+  resolveDistanceKm(from, to, seq);
+}
+
 function syncCarOptions() {
   if (!$('car')) return;
   const round = isRoundTrip();
@@ -160,29 +318,6 @@ function syncCarOptions() {
 }
 function selectedCarDetails() {
   return $('car').selectedOptions[0].textContent;
-}
-function updateLiveEstimate() {
-  const el = $('live-estimate');
-  const from = $('pickup')?.value.trim() || '';
-  const to = $('drop')?.value.trim() || '';
-  const match = from && to && from.toLowerCase() !== to.toLowerCase() ? window.VK_routeByCities?.(from, to) : null;
-  const car = selectedCar();
-  const round = isRoundTrip();
-  const rate = carRate(car, round);
-  if ($('fare-amount') && match) {
-    $('fare-amount').textContent = window.VK_formatInr(match.km * rate);
-  } else if ($('fare-amount')) {
-    $('fare-amount').textContent = '—';
-  }
-  if ($('rate-tag')) $('rate-tag').textContent = `₹${rate}/km`;
-  if ($('trip-kind-label')) $('trip-kind-label').textContent = round ? 'Round trip' : 'One-way / Drop';
-  if (!el) return;
-  if (!from || !to || from.toLowerCase() === to.toLowerCase()) {
-    el.textContent = 'Search pickup and drop to see a rough base fare for popular routes.';
-    return;
-  }
-  const line = estimateLine(from, to);
-  el.textContent = line || 'Custom route — we will confirm distance and the full fare on WhatsApp.';
 }
 
 syncCarOptions();
@@ -233,8 +368,12 @@ document.querySelectorAll('input[name="trip-kind"]').forEach((input) =>
     updateLiveEstimate();
   })
 );
+let estimateTimer = null;
 ['pickup', 'drop'].forEach((id) => {
-  $(id)?.addEventListener('input', updateLiveEstimate);
+  $(id)?.addEventListener('input', () => {
+    clearTimeout(estimateTimer);
+    estimateTimer = setTimeout(updateLiveEstimate, 350);
+  });
   $(id)?.addEventListener('change', updateLiveEstimate);
 });
 $('car')?.addEventListener('change', () => {
