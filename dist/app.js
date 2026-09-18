@@ -159,22 +159,33 @@ function haversineKm(a, b) {
   return 6371 * 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1 - x));
 }
 
+const MIN_ONE_WAY_KM = 130;
+const MIN_ROUND_TRIP_KM = 250;
+
 function formatEstimateLine(oneWayKm, source) {
   const car = selectedCar();
   const round = isRoundTrip();
   const rate = carRate(car, round);
   const leg = Math.max(1, Math.round(oneWayKm));
-  const billableKm = round ? leg * 2 : leg;
+  const rawBillable = round ? leg * 2 : leg;
+  const billableKm = round ? Math.max(rawBillable, MIN_ROUND_TRIP_KM) : Math.max(rawBillable, MIN_ONE_WAY_KM);
+  const usedMin = billableKm > rawBillable;
   const base = billableKm * rate;
   const label = round ? 'round-trip base' : 'one-way base';
-  const dist =
-    round
-      ? `~${leg} km each way · ~${billableKm} km total`
-      : source === 'driving'
-        ? `~${leg} km driving`
-        : source === 'table'
-          ? `~${leg} km`
-          : `~${leg} km (approx)`;
+  let dist;
+  if (round) {
+    dist = usedMin
+      ? `~${leg} km each way · billed ${billableKm} km min`
+      : `~${leg} km each way · ~${billableKm} km total`;
+  } else if (usedMin) {
+    dist = `~${leg} km · billed ${billableKm} km min`;
+  } else if (source === 'driving') {
+    dist = `~${leg} km driving`;
+  } else if (source === 'table') {
+    dist = `~${leg} km`;
+  } else {
+    dist = `~${leg} km (approx)`;
+  }
   return `Approx. ${label} for ${dist} at ₹${rate}/km (${car.id}): ${window.VK_formatInr(base)}. Tolls, driver bata, parking and night charges are extra — confirmed on WhatsApp.`;
 }
 
@@ -184,7 +195,8 @@ function applyKmEstimate(oneWayKm, source) {
   const round = isRoundTrip();
   const rate = carRate(car, round);
   const leg = Math.max(1, Math.round(oneWayKm));
-  const billableKm = round ? leg * 2 : leg;
+  const rawBillable = round ? leg * 2 : leg;
+  const billableKm = round ? Math.max(rawBillable, MIN_ROUND_TRIP_KM) : Math.max(rawBillable, MIN_ONE_WAY_KM);
   const base = billableKm * rate;
   lastEstimate = {
     km: leg,
@@ -197,8 +209,8 @@ function applyKmEstimate(oneWayKm, source) {
   if ($('rate-tag')) $('rate-tag').textContent = `₹${rate}/km`;
   if ($('trip-kind-label')) {
     $('trip-kind-label').textContent = round
-      ? `Round trip · ${leg}×2 km`
-      : 'One-way / Drop';
+      ? `Round trip · min ${MIN_ROUND_TRIP_KM} km`
+      : `One-way · min ${MIN_ONE_WAY_KM} km`;
   }
   if ($('live-estimate')) $('live-estimate').textContent = lastEstimate.text;
   return true;
