@@ -159,32 +159,47 @@ function haversineKm(a, b) {
   return 6371 * 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1 - x));
 }
 
-function formatEstimateLine(km, source) {
+function formatEstimateLine(oneWayKm, source) {
   const car = selectedCar();
   const round = isRoundTrip();
   const rate = carRate(car, round);
-  const base = Math.round(km) * rate;
+  const leg = Math.max(1, Math.round(oneWayKm));
+  const billableKm = round ? leg * 2 : leg;
+  const base = billableKm * rate;
   const label = round ? 'round-trip base' : 'one-way base';
-  const how =
-    source === 'table'
-      ? `~${Math.round(km)} km`
+  const dist =
+    round
+      ? `~${leg} km each way · ~${billableKm} km total`
       : source === 'driving'
-        ? `~${Math.round(km)} km driving`
-        : `~${Math.round(km)} km (approx)`;
-  return `Approx. ${label} for ${how} at ₹${rate}/km (${car.id}): ${window.VK_formatInr(base)}. Tolls, driver bata, parking and night charges are extra — confirmed on WhatsApp.`;
+        ? `~${leg} km driving`
+        : source === 'table'
+          ? `~${leg} km`
+          : `~${leg} km (approx)`;
+  return `Approx. ${label} for ${dist} at ₹${rate}/km (${car.id}): ${window.VK_formatInr(base)}. Tolls, driver bata, parking and night charges are extra — confirmed on WhatsApp.`;
 }
 
-function applyKmEstimate(km, source) {
-  if (!Number.isFinite(km) || km <= 0) return false;
+function applyKmEstimate(oneWayKm, source) {
+  if (!Number.isFinite(oneWayKm) || oneWayKm <= 0) return false;
   const car = selectedCar();
   const round = isRoundTrip();
   const rate = carRate(car, round);
-  const rounded = Math.max(1, Math.round(km));
-  const base = rounded * rate;
-  lastEstimate = { km: rounded, source, text: formatEstimateLine(rounded, source) };
+  const leg = Math.max(1, Math.round(oneWayKm));
+  const billableKm = round ? leg * 2 : leg;
+  const base = billableKm * rate;
+  lastEstimate = {
+    km: leg,
+    billableKm,
+    round,
+    source,
+    text: formatEstimateLine(leg, source)
+  };
   if ($('fare-amount')) $('fare-amount').textContent = window.VK_formatInr(base);
   if ($('rate-tag')) $('rate-tag').textContent = `₹${rate}/km`;
-  if ($('trip-kind-label')) $('trip-kind-label').textContent = round ? 'Round trip' : 'One-way / Drop';
+  if ($('trip-kind-label')) {
+    $('trip-kind-label').textContent = round
+      ? `Round trip · ${leg}×2 km`
+      : 'One-way / Drop';
+  }
   if ($('live-estimate')) $('live-estimate').textContent = lastEstimate.text;
   return true;
 }
