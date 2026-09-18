@@ -126,7 +126,7 @@ ROUTES = [
 ]
 
 ROOT = Path(__file__).resolve().parents[1] / 'dist'
-ASSET_V = '15'
+ASSET_V = '16'
 
 FLOAT = '''<nav class="contact-float" aria-label="Quick contact">
   <a class="contact-float-call" href="tel:+919677075741" aria-label="Call VK Signature Travels"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 006.6 6.6l2.2-2.2a1 1 0 011-.25 11.4 11.4 0 003.6.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.4 11.4 0 00.57 3.6 1 1 0 01-.25 1z"/></svg></a>
@@ -234,7 +234,7 @@ def booking_form(from_val='', to_val='', fare='—'):
         <p id="live-estimate" class="live-estimate" role="status">Search pickup and drop to see a rough base fare for popular routes.</p>
       </div>
       <button class="primary wa-submit" type="submit">Get quote on WhatsApp <span>↗</span></button>
-      <p class="form-note">No payment on this page. Tolls, bata and parking confirmed on WhatsApp. Same-city package: one-way min 130 km · round trip min 250 km. Different cities: out-and-back for round trip, ₹1/km less. We usually reply within 15 minutes.</p>
+      <p class="form-note">No payment on this page. Tolls, bata and parking confirmed on WhatsApp. One-way min 130 km. Round trip min 250 km per day (start→end dates). Out-and-back distance used when higher. ₹1/km less on round trip. We usually reply within 15 minutes.</p>
       <p id="form-error" role="alert"></p>
     </form>'''
 
@@ -330,7 +330,7 @@ def render_home():
     <article><span class="vehicle-label">OUTSTATION TAXI</span><h3>Innova</h3><div class="tariffs"><div><span class="tariff-kind">ONE-WAY / DROP</span><p class="vehicle-price">₹21<span> / km</span></p></div><div><span class="tariff-kind">ROUND TRIP</span><p class="vehicle-price">₹20<span> / km</span></p></div></div><div class="specs"></div><button class="text-button" data-car="Innova">Choose Innova ↗</button></article>
     <article><span class="vehicle-label">OUTSTATION TAXI</span><h3>Innova Crysta</h3><div class="tariffs"><div><span class="tariff-kind">ONE-WAY / DROP</span><p class="vehicle-price">₹22–25<span> / km</span></p></div><div><span class="tariff-kind">ROUND TRIP</span><p class="vehicle-price">₹21–24<span> / km</span></p></div></div><div class="specs"><span>6+1 seating</span></div><button class="text-button" data-car="Innova Crysta">Choose Innova Crysta ↗</button></article>
   </div>
-  <p class="fare-note">Seating is passengers + driver. Minimum billing: 130 km one-way · 250 km round trip. Round trip is ₹1/km less than one-way. Confirm final fare and charges before booking.</p>
+  <p class="fare-note">Seating is passengers + driver. Minimum billing: 130 km one-way · 250 km per day round trip (by start/end dates). Round trip is ₹1/km less than one-way. Confirm final fare and charges before booking.</p>
 </section>
 
 <section class="trust section" id="trust">
@@ -362,7 +362,7 @@ def render_home():
   </div>
   <div class="questions">
     <details><summary>Can I book a one-way drop taxi?</summary><p>Yes. Choose one-way / drop, then your pickup city, destination and travel date. You do not need to plan a return trip.</p></details>
-    <details><summary>How is round trip priced?</summary><p>Round trip is ₹1 per km less than the one-way rate for the same car, and covers both directions (to and fro). Minimum billing is 130 km for one-way and 250 km for round trip. Confirm the total fare, driver allowance, tolls, parking and any other applicable charges before accepting a trip.</p></details>
+    <details><summary>How is round trip priced?</summary><p>Round trip is ₹1 per km less than the one-way rate for the same car, billed for both directions. Minimum billing is 250 km per day based on your start and end dates (inclusive). One-way minimum is 130 km. Confirm the total fare, driver allowance, tolls, parking and any other applicable charges before accepting a trip.</p></details>
     <details><summary>Which locations do you cover?</summary><p>We cover journeys across Tamil Nadu and popular nearby hill destinations such as Ooty, Kodaikanal and Munnar. You can enter any town or city. Availability is confirmed for your specific route.</p></details>
     <details><summary>How accurate are the “from” fares?</summary><p>They are rough one-way sedan bases using ₹15/km × a typical highway distance. Tolls, bata and parking can change the total. Always confirm with our team.</p></details>
     <details><summary>Is my trip confirmed when I fill in the form?</summary><p>No. The form prepares your trip details. A booking is confirmed only after the team agrees on availability, pickup details and the final fare with you.</p></details>

@@ -184,7 +184,23 @@ function haversineKm(a, b) {
 }
 
 const MIN_ONE_WAY_KM = 130;
-const MIN_ROUND_TRIP_KM = 250;
+const MIN_ROUND_TRIP_KM_PER_DAY = 250;
+
+function tripDays() {
+  if (!isRoundTrip()) return 1;
+  const start = $('date')?.value;
+  const end = $('end-date')?.value || start;
+  if (!start) return 1;
+  const a = new Date(`${start}T12:00:00`);
+  const b = new Date(`${(end || start)}T12:00:00`);
+  if (Number.isNaN(a.getTime()) || Number.isNaN(b.getTime())) return 1;
+  const diff = Math.round((b.getTime() - a.getTime()) / 86400000);
+  return Math.max(1, diff + 1);
+}
+
+function roundTripMinKm() {
+  return tripDays() * MIN_ROUND_TRIP_KM_PER_DAY;
+}
 
 function samePlace(from, to) {
   const a = String(from || '').trim().toLowerCase();
@@ -202,28 +218,31 @@ function formatEstimateLine(oneWayKm, source) {
   const car = selectedCar();
   const round = isRoundTrip();
   const rate = carRate(car, round);
+  const days = tripDays();
+  const dayMin = roundTripMinKm();
   const leg = Math.max(1, Math.round(oneWayKm));
   const rawBillable = round ? leg * 2 : leg;
   const billableKm =
     source === 'local'
       ? round
-        ? MIN_ROUND_TRIP_KM
+        ? dayMin
         : MIN_ONE_WAY_KM
       : round
-        ? Math.max(rawBillable, MIN_ROUND_TRIP_KM)
+        ? Math.max(rawBillable, dayMin)
         : Math.max(rawBillable, MIN_ONE_WAY_KM);
   const usedMin = billableKm > rawBillable || source === 'local';
   const base = billableKm * rate;
   const label = round ? 'round-trip base' : 'one-way base';
+  const dayBit = days === 1 ? '1 day' : `${days} days`;
   let dist;
   if (source === 'local') {
     dist = round
-      ? `same-city package · ${billableKm} km min`
+      ? `same-city · ${dayBit} · ${billableKm} km min (${MIN_ROUND_TRIP_KM_PER_DAY}/day)`
       : `same-city / local · ${billableKm} km min`;
   } else if (round) {
     dist = usedMin
-      ? `~${leg} km each way · billed ${billableKm} km min`
-      : `~${leg} km each way · ~${billableKm} km total`;
+      ? `~${leg} km each way · ${dayBit} · billed ${billableKm} km min (${MIN_ROUND_TRIP_KM_PER_DAY}/day)`
+      : `~${leg} km each way · ~${billableKm} km total · ${dayBit}`;
   } else if (usedMin) {
     dist = `~${leg} km · billed ${billableKm} km min`;
   } else if (source === 'driving') {
@@ -241,20 +260,28 @@ function applyKmEstimate(oneWayKm, source) {
   const car = selectedCar();
   const round = isRoundTrip();
   const rate = carRate(car, round);
-  const leg = source === 'local' ? (round ? MIN_ROUND_TRIP_KM / 2 : MIN_ONE_WAY_KM) : Math.max(1, Math.round(oneWayKm));
+  const days = tripDays();
+  const dayMin = roundTripMinKm();
+  const leg =
+    source === 'local'
+      ? round
+        ? Math.max(1, Math.round(dayMin / 2))
+        : MIN_ONE_WAY_KM
+      : Math.max(1, Math.round(oneWayKm));
   const rawBillable = round ? leg * 2 : leg;
   const billableKm =
     source === 'local'
       ? round
-        ? MIN_ROUND_TRIP_KM
+        ? dayMin
         : MIN_ONE_WAY_KM
       : round
-        ? Math.max(rawBillable, MIN_ROUND_TRIP_KM)
+        ? Math.max(rawBillable, dayMin)
         : Math.max(rawBillable, MIN_ONE_WAY_KM);
   const base = billableKm * rate;
   lastEstimate = {
     km: leg,
     billableKm,
+    days,
     round,
     source,
     text: formatEstimateLine(leg, source)
@@ -263,7 +290,7 @@ function applyKmEstimate(oneWayKm, source) {
   if ($('rate-tag')) $('rate-tag').textContent = `₹${rate}/km`;
   if ($('trip-kind-label')) {
     $('trip-kind-label').textContent = round
-      ? `Round trip · min ${MIN_ROUND_TRIP_KM} km`
+      ? `Round trip · ${days}d · min ${dayMin} km`
       : `One-way · min ${MIN_ONE_WAY_KM} km`;
   }
   if ($('live-estimate')) $('live-estimate').textContent = lastEstimate.text;
@@ -370,7 +397,7 @@ function updateLiveEstimate() {
   if ($('rate-tag')) $('rate-tag').textContent = `₹${rate}/km`;
   if ($('trip-kind-label')) {
     $('trip-kind-label').textContent = round
-      ? `Round trip · min ${MIN_ROUND_TRIP_KM} km`
+      ? `Round trip · ${tripDays()}d · min ${roundTripMinKm()} km`
       : `One-way · min ${MIN_ONE_WAY_KM} km`;
   }
 
@@ -380,7 +407,7 @@ function updateLiveEstimate() {
   }
 
   if (samePlace(from, to)) {
-    applyKmEstimate(round ? MIN_ROUND_TRIP_KM / 2 : MIN_ONE_WAY_KM, 'local');
+    applyKmEstimate(round ? roundTripMinKm() / 2 : MIN_ONE_WAY_KM, 'local');
     return;
   }
 
@@ -465,7 +492,9 @@ $('date')?.addEventListener('change', () => {
     $('end-date').min = start;
     if ($('end-date').value && $('end-date').value < start) $('end-date').value = start;
   }
+  updateLiveEstimate();
 });
+$('end-date')?.addEventListener('change', updateLiveEstimate);
 syncEndDateField();
 let estimateTimer = null;
 ['pickup', 'drop'].forEach((id) => {
