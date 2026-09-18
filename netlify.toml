@@ -1,3 +1,50 @@
 [build]
   publish = "dist"
   command = ""
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[redirects]]
+  from = "/coimbatore-to-munnar-taxi"
+  to = "/coimbatore-to-munnar-taxi/"
+  status = 301
+
+[[redirects]]
+  from = "/coimbatore-to-kodaikanal-taxi"
+  to = "/coimbatore-to-kodaikanal-taxi/"
+  status = 301
+
+[[redirects]]
+  from = "/coimbatore-to-chennai-taxi"
+  to = "/coimbatore-to-chennai-taxi/"
+  status = 301
+
+[[redirects]]
+  from = "/chennai-to-coimbatore-taxi"
+  to = "/chennai-to-coimbatore-taxi/"
+  status = 301
+
+[[redirects]]
+  from = "/chennai-to-madurai-taxi"
+  to = "/chennai-to-madurai-taxi/"
+  status = 301
+
+[[redirects]]
+  from = "/coimbatore-to-ooty-taxi"
+  to = "/coimbatore-to-ooty-taxi/"
+  status = 301
+
+[[redirects]]
+  from = "/trichy-to-chennai-taxi"
+  to = "/trichy-to-chennai-taxi/"
+  status = 301
+
+[[redirects]]
+  from = "/chennai-to-ooty-taxi"
+  to = "/chennai-to-ooty-taxi/"
+  status = 301

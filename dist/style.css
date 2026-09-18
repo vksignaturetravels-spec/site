@@ -37,3 +37,54 @@
 .trip-toggle{margin-top:14px;flex-wrap:wrap}
 .trip-option{font-size:12px;padding:8px 11px}
 }
+.mobile-jump{display:none}
+.tariff-strip{margin:28px 20px 0;padding:36px 4%;border-radius:12px;background:#143d32;color:#fff}
+.tariff-kicker{margin:0 0 12px;font-size:10px;letter-spacing:2px;font-weight:700;color:var(--lime)}
+.tariff-strip h2{font-size:clamp(28px,4vw,46px);letter-spacing:-1.2px;margin:0 0 14px;max-width:18ch}
+.tariff-strip h2 em{font-style:normal;color:var(--lime)}
+.tariff-strip>p{margin:0 0 18px;max-width:52ch;color:#d5e0d6;line-height:1.7;font-size:15px}
+.tariff-strip .text-button{color:var(--lime)}
+.live-estimate{margin:14px 0 0;padding:12px 14px;border-radius:6px;background:#f1f5eb;font-size:13px;line-height:1.65;color:#3f5348}
+.fares{background:#f7faf4;border-top:1px solid var(--line)}
+.fare-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.fare-card,.route-card{display:block;text-decoration:none;color:inherit}
+.fare-card{padding:22px;border:1px solid #dce3d7;border-radius:8px;background:#fff;transition:transform .2s,background .2s}
+.fare-card:hover{transform:translateY(-4px);background:#e8f0dc}
+.fare-cities{display:block;font-family:'Manrope',sans-serif;font-size:22px;line-height:1.45;margin:16px 0 18px;letter-spacing:-.6px;font-weight:500}
+.fare-cities>span{float:right;color:#8eaa64}
+.fare-amount{display:block;font-size:18px;font-weight:700;color:var(--green);border-top:1px solid var(--line);padding-top:14px}
+.fare-amount small{display:block;margin-top:6px;font-size:11px;font-weight:500;color:var(--muted)}
+.route-grid{grid-template-columns:repeat(4,1fr)}
+.trust{border-top:1px solid var(--line);background:#fcfdf9}
+.trust-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:36px}
+.trust-metrics>div{padding:22px 18px;border:1px solid var(--line);border-radius:8px;background:#fff}
+.trust-metrics strong{display:block;font-family:'Manrope',sans-serif;font-size:20px;margin-bottom:8px;color:var(--green)}
+.trust-metrics span{font-size:13px;color:var(--muted);line-height:1.5}
+.trust-quotes{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.trust-quotes figure{margin:0;padding:24px;border-radius:8px;background:#f1f5eb;border:1px solid #e0e8d8}
+.trust-quotes blockquote{margin:0 0 16px;font-size:14px;line-height:1.75;color:var(--ink)}
+.trust-quotes figcaption{font-size:12px;color:#6e7b5d;font-weight:600}
+.route-hero{margin:0 20px;padding:48px 4% 40px;border-radius:12px;background:#244d40;color:#fff;position:relative;overflow:hidden}
+.route-hero::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(5,30,24,.88),rgba(5,30,24,.45)),url('../hero.jpg') center 56%/cover;opacity:1}
+.route-hero>*{position:relative}
+.route-hero .eyebrow{color:var(--lime)}
+.route-hero h1{font-size:clamp(34px,5vw,58px);letter-spacing:-2px;margin:0 0 16px;max-width:16ch}
+.route-hero .hero-description{color:#e2e9e1;max-width:48ch}
+.route-fare-pill{display:inline-flex;flex-direction:column;gap:4px;margin-top:22px;padding:14px 18px;border-radius:8px;background:rgba(215,238,150,.14);border:1px solid rgba(215,238,150,.35)}
+.route-fare-pill strong{font-size:28px;font-family:'Manrope',sans-serif;color:var(--lime)}
+.route-fare-pill span{font-size:12px;color:#d5e0d6}
+.breadcrumb{padding:18px 5% 0;font-size:12px;color:var(--muted)}
+.breadcrumb a{text-decoration:underline;text-underline-offset:2px}
+.related-routes{padding:40px 5% 20px}
+.related-routes h2{font-size:28px;margin:0 0 18px}
+@media(max-width:1000px){
+.fare-grid,.trust-metrics,.trust-quotes,.route-grid{grid-template-columns:1fr 1fr}
+.hero-tags{flex-wrap:wrap}
+}
+@media(max-width:650px){
+.mobile-jump{display:flex;gap:8px;padding:10px 4%;overflow-x:auto;border-bottom:1px solid var(--line);background:#fff;position:sticky;top:0;z-index:20;-webkit-overflow-scrolling:touch}
+.mobile-jump a{flex:0 0 auto;padding:8px 12px;border:1px solid var(--line);border-radius:999px;font-size:12px;font-weight:600;color:var(--green);background:#f7faf4}
+.tariff-strip{margin:18px 10px 0;padding:28px 7%}
+.fare-grid,.trust-metrics,.trust-quotes,.route-grid{grid-template-columns:1fr}
+.route-hero{margin:0 10px;padding:36px 7%}
+}
