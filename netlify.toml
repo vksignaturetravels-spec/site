@@ -1,6 +1,6 @@
 [build]
   publish = "dist"
-  command = ""
+  command = "node -e \"console.log('static build ok')\""
   functions = "netlify/functions"
 
 [[headers]]
