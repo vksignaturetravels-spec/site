@@ -1,9 +1,8 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18457731741"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18457731741');</script>
 <meta name="theme-color" content="#143d32">
@@ -11,98 +10,81 @@
 <meta name="description" content="Plan your one-way and drop taxi journey across Tamil Nadu with VK Signature Travels. See rough fares for popular routes, choose your car, and get a WhatsApp quote.">
 <link rel="canonical" href="https://vksignaturetravels.com/">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='10' fill='%23143d32'/%3E%3Ctext x='5' y='27' font-family='Arial' font-size='22' font-weight='bold' fill='%23d3ed88'%3EVK%3C/text%3E%3C/svg%3E">
-<link rel="stylesheet" href="style.css?v=8">
-<script src="routes-data.js?v=8" defer></script>
-<script src="app.js?v=8" defer></script>
+<link rel="stylesheet" href="style.css?v=9">
+<script src="routes-data.js?v=9" defer></script>
+<script src="app.js?v=9" defer></script>
 </head>
-<body>
-<header>
-  <a class="brand" href="/" aria-label="VK Signature Travels home"><span class="brand-mark">VK<span>â†—</span></span><span>SIGNATURE <b>TRAVELS</b></span></a>
-  <nav aria-label="Main navigation">
-    <a href="#journey">Book a ride</a>
+<body class="site-home">
+<header class="site-header">
+  <a class="brand" href="/" aria-label="VK Signature Travels home"><span class="brand-mark">VK<span>↗</span></span><span>SIGNATURE <b>TRAVELS</b></span></a>
+  <nav class="site-nav" aria-label="Main navigation">
+    <a href="#journey">Book</a>
     <a href="#fares">Fares</a>
-    <a href="#routes">Our routes</a>
-    <a href="#fleet">Our cars</a>
-    <a href="#trust">Trust</a>
+    <a href="#routes">Routes</a>
+    <a href="#fleet">Cars</a>
     <a href="#answers">FAQs</a>
   </nav>
-  <a class="nav-cta" href="#journey">Letâ€™s get you there <span>â†—</span></a>
-</header>
-
-<nav class="mobile-jump" aria-label="Quick sections">
-  <a href="#journey">Book</a>
-  <a href="#fares">Fares</a>
-  <a href="#routes">Routes</a>
-  <a href="#fleet">Cars</a>
-  <a href="#trust">Trust</a>
-</nav>
-
-<main>
-<section class="hero">
-  <div class="hero-image" role="img" aria-label="Green hills and a winding road in the Nilgiris"></div>
-  <div class="hero-content">
-    <p class="eyebrow">YOUR NEXT JOURNEY, SIMPLIFIED</p>
-    <h1>One way.<br>Endless <em>possibilities.</em></h1>
-    <p class="hero-description">From your doorstep to your destination.<br>One-way, round trip & drop taxis across Tamil Nadu â€” and popular hill stations nearby.</p>
-    <div class="hero-tags">
-      <span>â†— &nbsp; City-to-city trips</span>
-      <span>âŒ– &nbsp; Doorstep pickup</span>
-      <span>â—‡ &nbsp; Reply in ~15 mins</span>
-    </div>
+  <div class="site-header-actions">
+    <a class="site-call" href="tel:+919677075741"><span>CALL US</span>+91 96770 75741</a>
+    <a class="site-wa" href="#journey">WhatsApp quote</a>
   </div>
-  <div class="location-tag">âŒ– &nbsp; THE NILGIRIS, TAMIL NADU</div>
-  <div class="hero-number">01 <span>/ YOUR JOURNEY STARTS HERE</span></div>
-</section>
-
-<section class="booking-wrap" id="journey">
-  <div class="booking-card">
-    <div class="booking-heading">
-      <div>
-        <p class="eyebrow">A LITTLE PLANNING. A GREAT JOURNEY.</p>
-        <h2>Where are we taking you?</h2>
-      </div>
-      <div class="trip-toggle" role="radiogroup" aria-label="Trip type">
-        <label class="trip-option"><input type="radio" name="trip-kind" value="one-way" checked> One-way / Drop</label>
-        <label class="trip-option"><input type="radio" name="trip-kind" value="round-trip"> Round trip</label>
-      </div>
+</header>
+<main>
+<section class="hero-stage" id="journey">
+  <div class="hero-panel">
+    <p class="eyebrow">QUICK DISPATCH</p>
+    <h1>One way. Endless possibilities.</h1>
+    <p class="hero-lede">One-way, round trip &amp; drop taxis across Tamil Nadu and nearby hill stations. Quote on WhatsApp in about 15 minutes.</p>
+    <div class="trip-toggle" role="radiogroup" aria-label="Trip type">
+      <label class="trip-option"><input type="radio" name="trip-kind" value="one-way" checked> One-way / Drop</label>
+      <label class="trip-option"><input type="radio" name="trip-kind" value="round-trip"> Round trip</label>
     </div>
-    <form id="booking-form">
-      <div class="booking-fields">
-        <label class="field-from"><span>FROM</span><input id="pickup" name="pickup" list="cities" placeholder="Chennai" required autocomplete="off" enterkeyhint="next"></label>
-        <button type="button" id="swap" aria-label="Swap pickup and drop cities">â‡„</button>
-        <label class="field-to"><span>TO</span><input id="drop" name="drop" list="cities" placeholder="Madurai" required autocomplete="off" enterkeyhint="next"></label>
-        <label class="field-date"><span>TRAVEL DATE</span><input id="date" name="date" type="date" required></label>
-        <label class="field-time"><span>PICKUP TIME</span><input id="time" name="time" type="time" required></label>
-        <label class="field-car"><span>PREFERRED CAR</span>
-          <select id="car" name="car" required>
-            <option value="Sedan CNG">Sedan CNG (4+1) â€” â‚¹15/km</option>
-            <option value="Sedan (Non-CNG)">Sedan (Non-CNG) (4+1) â€” â‚¹15/km</option>
-            <option value="SUV CNG">SUV CNG (7+1 / 6+1) â€” â‚¹20/km</option>
-            <option value="SUV (Non-CNG)">SUV (Non-CNG) (7+1 / 6+1) â€” â‚¹20/km</option>
-            <option value="Innova">Innova â€” â‚¹21/km</option>
-            <option value="Innova Crysta">Innova Crysta (6+1) â€” â‚¹22â€“25/km</option>
-          </select>
-        </label>
-        <button class="primary" type="submit">Get quote on WhatsApp <span>â†—</span></button>
+    <form id="booking-form" class="booking-form">
+      <label class="field-from"><span>PICKUP FROM</span><input id="pickup" name="pickup" list="cities" placeholder="Chennai" required autocomplete="off" enterkeyhint="next"></label>
+      <button type="button" id="swap" class="swap-btn" aria-label="Swap pickup and drop cities">⇄</button>
+      <label class="field-to"><span>DROP TO</span><input id="drop" name="drop" list="cities" placeholder="Madurai" required autocomplete="off" enterkeyhint="next"></label>
+      <div class="form-row">
+        <label class="field-date"><span>DATE</span><input id="date" name="date" type="date" required></label>
+        <label class="field-time"><span>TIME</span><input id="time" name="time" type="time" required></label>
       </div>
-      <p id="live-estimate" class="live-estimate" role="status">Enter two cities to see a rough base fare for popular routes.</p>
-      <p class="form-note">Round trip is â‚¹1/km less than one-way. No payment on this form â€” fare, bata, tolls and availability are confirmed on WhatsApp. We usually reply within 15 minutes.</p>
+      <label class="field-car"><span>SELECT CAR</span>
+        <select id="car" name="car" required>
+          <option value="Sedan CNG">Sedan CNG (4+1) — ₹15/km</option>
+          <option value="Sedan (Non-CNG)">Sedan (Non-CNG) (4+1) — ₹15/km</option>
+          <option value="SUV CNG">SUV CNG (7+1 / 6+1) — ₹20/km</option>
+          <option value="SUV (Non-CNG)">SUV (Non-CNG) (7+1 / 6+1) — ₹20/km</option>
+          <option value="Innova">Innova — ₹21/km</option>
+          <option value="Innova Crysta">Innova Crysta (6+1) — ₹22–25/km</option>
+        </select>
+      </label>
+      <div class="estimate-box">
+        <div class="estimate-top">
+          <div>
+            <span class="tariff-kind">ESTIMATED BASE FARE</span>
+            <p id="fare-amount">—</p>
+          </div>
+          <div class="estimate-rate">
+            <span id="rate-tag">₹15/km</span>
+            <p id="trip-kind-label">One-way / Drop</p>
+          </div>
+        </div>
+        <p id="live-estimate" class="live-estimate" role="status">Enter two cities to see a rough base fare for popular routes.</p>
+      </div>
+      <button class="primary wa-submit" type="submit">Get quote on WhatsApp <span>↗</span></button>
+      <p class="form-note">No payment on this page. Tolls, bata and parking confirmed on WhatsApp. Round trip is ₹1/km less. We usually reply within 15 minutes.</p>
       <p id="form-error" role="alert"></p>
     </form>
   </div>
+  <aside class="hero-photo" role="img" aria-label="Green hills and a winding road in the Nilgiris">
+    <span class="hero-photo-tag">⌖ &nbsp; THE NILGIRIS, TAMIL NADU</span>
+  </aside>
 </section>
 
 <section class="tariff-strip" id="tariff-highlight" aria-label="Round trip savings">
   <p class="tariff-kicker">TARIFF, CLEARLY</p>
-  <h2>Round trip is <em>â‚¹1 less</em> a kilometre.</h2>
-  <p>Same car. Same road. One rupee cheaper each km when you return. Sedan from â‚¹15/km one-way Â· â‚¹14/km round trip.</p>
-  <a class="text-button" href="#fleet">See every car rate â†—</a>
-</section>
-
-<section class="intro-strip">
-  <div><span class="line-icon">â†—</span><p><strong>Just the trip you need</strong><span>One-way travel, made simple.</span></p></div>
-  <div><span class="line-icon">âŒ–</span><p><strong>Tamil Nadu & nearby hills</strong><span>Cities, towns, Ooty, Kodaikanal, Munnar.</span></p></div>
-  <div><span class="line-icon">â—‡</span><p><strong>Your kind of comfort</strong><span>Choose a sedan or a spacious SUV.</span></p></div>
+  <h2>Round trip is <em>₹1 less</em> a kilometre.</h2>
+  <p>Same car. Same road. One rupee cheaper each km when you return. Sedan from ₹15/km one-way · ₹14/km round trip.</p>
+  <a class="text-button" href="#fleet">See every car rate ↗</a>
 </section>
 
 <section class="fares section" id="fares">
@@ -111,7 +93,7 @@
       <p class="eyebrow">ROUGH FARES, BEFORE YOU CHAT</p>
       <h2>Popular routes, from estimates.</h2>
     </div>
-    <p>Sedan one-way base at â‚¹15/km Ã— typical highway distance.<br>Tolls, bata and parking are confirmed on WhatsApp.</p>
+    <p>Sedan one-way base at ₹15/km × typical highway distance. Tolls, bata and parking are confirmed on WhatsApp.</p>
   </div>
   <div class="fare-grid" data-fill-route-fares="8" data-base="./"></div>
 </section>
@@ -122,19 +104,10 @@
       <p class="eyebrow">FAMILIAR ROADS. NEW MEMORIES.</p>
       <h2>Where the road takes you.</h2>
     </div>
-    <p>A work trip, a homecoming, or a weekend away.<br>Open a route page, or fill the form with your own cities.</p>
+    <p>Open a route page, or fill the form with your own cities.</p>
   </div>
-  <div class="route-grid">
-    <a class="route-card" href="./chennai-to-coimbatore-taxi/"><span class="route-index">01 / THE CITY CONNECTION</span><span class="route-cities">Chennai <span>â†—</span><br>Coimbatore</span><span class="route-bottom">From â‚¹7,500 sedan base <b>â†’</b></span></a>
-    <a class="route-card" href="./chennai-to-madurai-taxi/"><span class="route-index">02 / TO THE TEMPLE CITY</span><span class="route-cities">Chennai <span>â†—</span><br>Madurai</span><span class="route-bottom">From â‚¹6,900 sedan base <b>â†’</b></span></a>
-    <a class="route-card" href="./coimbatore-to-ooty-taxi/"><span class="route-index">03 / A LITTLE MOUNTAIN AIR</span><span class="route-cities">Coimbatore <span>â†—</span><br>Ooty</span><span class="route-bottom">From â‚¹1,275 sedan base <b>â†’</b></span></a>
-    <a class="route-card" href="./trichy-to-chennai-taxi/"><span class="route-index">04 / TOWARDS THE COAST</span><span class="route-cities">Trichy <span>â†—</span><br>Chennai</span><span class="route-bottom">From â‚¹4,800 sedan base <b>â†’</b></span></a>
-    <a class="route-card" href="./coimbatore-to-munnar-taxi/"><span class="route-index">05 / TEA COUNTRY</span><span class="route-cities">Coimbatore <span>â†—</span><br>Munnar</span><span class="route-bottom">From â‚¹2,625 sedan base <b>â†’</b></span></a>
-    <a class="route-card" href="./coimbatore-to-kodaikanal-taxi/"><span class="route-index">06 / MISTY HILLS</span><span class="route-cities">Coimbatore <span>â†—</span><br>Kodaikanal</span><span class="route-bottom">From â‚¹2,550 sedan base <b>â†’</b></span></a>
-    <a class="route-card" href="./coimbatore-to-chennai-taxi/"><span class="route-index">07 / WEST TO EAST</span><span class="route-cities">Coimbatore <span>â†—</span><br>Chennai</span><span class="route-bottom">From â‚¹7,500 sedan base <b>â†’</b></span></a>
-    <a class="route-card" href="./chennai-to-ooty-taxi/"><span class="route-index">08 / NILGIRIS RUN</span><span class="route-cities">Chennai <span>â†—</span><br>Ooty</span><span class="route-bottom">From â‚¹8,175 sedan base <b>â†’</b></span></a>
-  </div>
-  <p class="coverage">Also travel to Salem, Tirunelveli, Erode, Thanjavur, Vellore, Kanyakumari, Rameswaram and destinations across Tamil Nadu â€” plus popular hill stations such as Ooty, Kodaikanal and Munnar.</p>
+  <div class="route-grid"><a class="route-card" href="./coimbatore-to-munnar-taxi/"><span class="route-index">01 / HILL STATION ESCAPE</span><span class="route-cities">Coimbatore <span>↗</span><br>Munnar</span><span class="route-bottom">From ₹2,625 sedan base <b>→</b></span></a><a class="route-card" href="./coimbatore-to-kodaikanal-taxi/"><span class="route-index">02 / TO THE MISTY HILLS</span><span class="route-cities">Coimbatore <span>↗</span><br>Kodaikanal</span><span class="route-bottom">From ₹2,550 sedan base <b>→</b></span></a><a class="route-card" href="./coimbatore-to-chennai-taxi/"><span class="route-index">03 / CITY TO COAST</span><span class="route-cities">Coimbatore <span>↗</span><br>Chennai</span><span class="route-bottom">From ₹7,500 sedan base <b>→</b></span></a><a class="route-card" href="./chennai-to-coimbatore-taxi/"><span class="route-index">04 / THE CITY CONNECTION</span><span class="route-cities">Chennai <span>↗</span><br>Coimbatore</span><span class="route-bottom">From ₹7,500 sedan base <b>→</b></span></a><a class="route-card" href="./chennai-to-madurai-taxi/"><span class="route-index">05 / TO THE TEMPLE CITY</span><span class="route-cities">Chennai <span>↗</span><br>Madurai</span><span class="route-bottom">From ₹6,900 sedan base <b>→</b></span></a><a class="route-card" href="./coimbatore-to-ooty-taxi/"><span class="route-index">06 / A LITTLE MOUNTAIN AIR</span><span class="route-cities">Coimbatore <span>↗</span><br>Ooty</span><span class="route-bottom">From ₹1,275 sedan base <b>→</b></span></a><a class="route-card" href="./trichy-to-chennai-taxi/"><span class="route-index">07 / TOWARDS THE COAST</span><span class="route-cities">Trichy <span>↗</span><br>Chennai</span><span class="route-bottom">From ₹4,800 sedan base <b>→</b></span></a><a class="route-card" href="./chennai-to-ooty-taxi/"><span class="route-index">08 / NILGIRIS FROM THE COAST</span><span class="route-cities">Chennai <span>↗</span><br>Ooty</span><span class="route-bottom">From ₹8,175 sedan base <b>→</b></span></a></div>
+  <p class="coverage">Also travel to Salem, Tirunelveli, Erode, Thanjavur, Vellore, Kanyakumari, Rameswaram and destinations across Tamil Nadu — plus Ooty, Kodaikanal and Munnar.</p>
 </section>
 
 <section class="fleet section" id="fleet">
@@ -143,17 +116,17 @@
       <p class="eyebrow">ROOM FOR YOUR PLANS</p>
       <h2>A comfortable way to go.</h2>
     </div>
-    <p>Choose your preferred car category.<br>Vehicle and fare are confirmed before booking.</p>
+    <p>Choose your preferred car. Vehicle and fare are confirmed before booking.</p>
   </div>
   <div class="fleet-grid">
-    <article><span class="vehicle-label">OUTSTATION TAXI</span><h3>Sedan CNG</h3><div class="tariffs"><div><span class="tariff-kind">ONE-WAY / DROP</span><p class="vehicle-price">â‚¹15<span> / km</span></p></div><div><span class="tariff-kind">ROUND TRIP</span><p class="vehicle-price">â‚¹14<span> / km</span></p></div></div><div class="specs"><span>4+1 seating</span><span>Carrier mandatory</span></div><button class="text-button" data-car="Sedan CNG">Choose Sedan CNG â†—</button></article>
-    <article><span class="vehicle-label">OUTSTATION TAXI</span><h3>Sedan (Non-CNG)</h3><div class="tariffs"><div><span class="tariff-kind">ONE-WAY / DROP</span><p class="vehicle-price">â‚¹15<span> / km</span></p></div><div><span class="tariff-kind">ROUND TRIP</span><p class="vehicle-price">â‚¹14<span> / km</span></p></div></div><div class="specs"><span>4+1 seating</span></div><button class="text-button" data-car="Sedan (Non-CNG)">Choose Sedan (Non-CNG) â†—</button></article>
-    <article><span class="vehicle-label">OUTSTATION TAXI</span><h3>SUV CNG</h3><div class="tariffs"><div><span class="tariff-kind">ONE-WAY / DROP</span><p class="vehicle-price">â‚¹20<span> / km</span></p></div><div><span class="tariff-kind">ROUND TRIP</span><p class="vehicle-price">â‚¹19<span> / km</span></p></div></div><div class="specs"><span>7+1 / 6+1 seating</span><span>Carrier mandatory</span></div><button class="text-button" data-car="SUV CNG">Choose SUV CNG â†—</button></article>
-    <article><span class="vehicle-label">OUTSTATION TAXI</span><h3>SUV (Non-CNG)</h3><div class="tariffs"><div><span class="tariff-kind">ONE-WAY / DROP</span><p class="vehicle-price">â‚¹20<span> / km</span></p></div><div><span class="tariff-kind">ROUND TRIP</span><p class="vehicle-price">â‚¹19<span> / km</span></p></div></div><div class="specs"><span>7+1 / 6+1 seating</span><span>Carrier mandatory</span></div><button class="text-button" data-car="SUV (Non-CNG)">Choose SUV (Non-CNG) â†—</button></article>
-    <article><span class="vehicle-label">OUTSTATION TAXI</span><h3>Innova</h3><div class="tariffs"><div><span class="tariff-kind">ONE-WAY / DROP</span><p class="vehicle-price">â‚¹21<span> / km</span></p></div><div><span class="tariff-kind">ROUND TRIP</span><p class="vehicle-price">â‚¹20<span> / km</span></p></div></div><div class="specs"></div><button class="text-button" data-car="Innova">Choose Innova â†—</button></article>
-    <article><span class="vehicle-label">OUTSTATION TAXI</span><h3>Innova Crysta</h3><div class="tariffs"><div><span class="tariff-kind">ONE-WAY / DROP</span><p class="vehicle-price">â‚¹22â€“25<span> / km</span></p></div><div><span class="tariff-kind">ROUND TRIP</span><p class="vehicle-price">â‚¹21â€“24<span> / km</span></p></div></div><div class="specs"><span>6+1 seating</span></div><button class="text-button" data-car="Innova Crysta">Choose Innova Crysta â†—</button></article>
+    <article><span class="vehicle-label">OUTSTATION TAXI</span><h3>Sedan CNG</h3><div class="tariffs"><div><span class="tariff-kind">ONE-WAY / DROP</span><p class="vehicle-price">₹15<span> / km</span></p></div><div><span class="tariff-kind">ROUND TRIP</span><p class="vehicle-price">₹14<span> / km</span></p></div></div><div class="specs"><span>4+1 seating</span><span>Carrier mandatory</span></div><button class="text-button" data-car="Sedan CNG">Choose Sedan CNG ↗</button></article>
+    <article><span class="vehicle-label">OUTSTATION TAXI</span><h3>Sedan (Non-CNG)</h3><div class="tariffs"><div><span class="tariff-kind">ONE-WAY / DROP</span><p class="vehicle-price">₹15<span> / km</span></p></div><div><span class="tariff-kind">ROUND TRIP</span><p class="vehicle-price">₹14<span> / km</span></p></div></div><div class="specs"><span>4+1 seating</span></div><button class="text-button" data-car="Sedan (Non-CNG)">Choose Sedan (Non-CNG) ↗</button></article>
+    <article><span class="vehicle-label">OUTSTATION TAXI</span><h3>SUV CNG</h3><div class="tariffs"><div><span class="tariff-kind">ONE-WAY / DROP</span><p class="vehicle-price">₹20<span> / km</span></p></div><div><span class="tariff-kind">ROUND TRIP</span><p class="vehicle-price">₹19<span> / km</span></p></div></div><div class="specs"><span>7+1 / 6+1 seating</span><span>Carrier mandatory</span></div><button class="text-button" data-car="SUV CNG">Choose SUV CNG ↗</button></article>
+    <article><span class="vehicle-label">OUTSTATION TAXI</span><h3>SUV (Non-CNG)</h3><div class="tariffs"><div><span class="tariff-kind">ONE-WAY / DROP</span><p class="vehicle-price">₹20<span> / km</span></p></div><div><span class="tariff-kind">ROUND TRIP</span><p class="vehicle-price">₹19<span> / km</span></p></div></div><div class="specs"><span>7+1 / 6+1 seating</span><span>Carrier mandatory</span></div><button class="text-button" data-car="SUV (Non-CNG)">Choose SUV (Non-CNG) ↗</button></article>
+    <article><span class="vehicle-label">OUTSTATION TAXI</span><h3>Innova</h3><div class="tariffs"><div><span class="tariff-kind">ONE-WAY / DROP</span><p class="vehicle-price">₹21<span> / km</span></p></div><div><span class="tariff-kind">ROUND TRIP</span><p class="vehicle-price">₹20<span> / km</span></p></div></div><div class="specs"></div><button class="text-button" data-car="Innova">Choose Innova ↗</button></article>
+    <article><span class="vehicle-label">OUTSTATION TAXI</span><h3>Innova Crysta</h3><div class="tariffs"><div><span class="tariff-kind">ONE-WAY / DROP</span><p class="vehicle-price">₹22–25<span> / km</span></p></div><div><span class="tariff-kind">ROUND TRIP</span><p class="vehicle-price">₹21–24<span> / km</span></p></div></div><div class="specs"><span>6+1 seating</span></div><button class="text-button" data-car="Innova Crysta">Choose Innova Crysta ↗</button></article>
   </div>
-  <p class="fare-note">Seating is shown as passengers + driver. Round trip is â‚¹1 per km less than one-way for every car. Confirm the final fare and applicable charges before booking. Innova Crysta one-way is â‚¹22â€“25/km and round trip is â‚¹21â€“24/km; confirm the applicable rate with our team.</p>
+  <p class="fare-note">Seating is passengers + driver. Round trip is ₹1/km less than one-way. Confirm final fare and charges before booking.</p>
 </section>
 
 <section class="trust section" id="trust">
@@ -162,82 +135,66 @@
       <p class="eyebrow">BEFORE YOU HAND OVER THE KEYS</p>
       <h2>Clear quotes. Fast replies.</h2>
     </div>
-    <p>No online payment. Your ride is confirmed only after<br>availability and the full fare are agreed on WhatsApp or call.</p>
+    <p>No online payment. Your ride is confirmed only after availability and the full fare are agreed on WhatsApp or call.</p>
   </div>
   <div class="trust-metrics">
     <div><strong>~15 min</strong><span>Typical WhatsApp reply</span></div>
-    <div><strong>â‚¹/km published</strong><span>Same rates on site and quote</span></div>
+    <div><strong>₹/km published</strong><span>Same rates on site and quote</span></div>
     <div><strong>Confirm first</strong><span>Fare agreed before you travel</span></div>
     <div><strong>+91 96770 75741</strong><span>Call or WhatsApp anytime</span></div>
   </div>
   <div class="trust-quotes">
-    <figure>
-      <blockquote>â€œBooked Chennai to Coimbatore for a family function. Quote came quickly on WhatsApp and the pickup was on time.â€</blockquote>
-      <figcaption>Priya Â· Chennai â†’ Coimbatore</figcaption>
-    </figure>
-    <figure>
-      <blockquote>â€œNeeded a one-way drop to Madurai â€” no return charge confusion. They confirmed tolls and bata before we left.â€</blockquote>
-      <figcaption>Arun Â· Chennai â†’ Madurai</figcaption>
-    </figure>
-    <figure>
-      <blockquote>â€œCoimbatore to Ooty with an Innova. Clear rate, helpful on the ghat timing, and easy to reach on the phone.â€</blockquote>
-      <figcaption>Meena Â· Coimbatore â†’ Ooty</figcaption>
-    </figure>
+    <figure><blockquote>“Booked Chennai to Coimbatore for a family function. Quote came quickly on WhatsApp and the pickup was on time.”</blockquote><figcaption>Priya · Chennai → Coimbatore</figcaption></figure>
+    <figure><blockquote>“Needed a one-way drop to Madurai — no return charge confusion. They confirmed tolls and bata before we left.”</blockquote><figcaption>Arun · Chennai → Madurai</figcaption></figure>
+    <figure><blockquote>“Coimbatore to Ooty with an Innova. Clear rate, helpful on the ghat timing, and easy to reach on the phone.”</blockquote><figcaption>Meena · Coimbatore → Ooty</figcaption></figure>
   </div>
 </section>
 
 <section class="faq section" id="answers">
   <div>
     <p class="eyebrow">BEFORE YOU HIT THE ROAD</p>
-    <h2>A few things<br>you might ask.</h2>
-    <a href="#journey" class="text-button">Letâ€™s plan your trip â†—</a>
+    <h2>A few things you might ask.</h2>
+    <a href="#journey" class="text-button">Plan your trip ↗</a>
   </div>
   <div class="questions">
     <details><summary>Can I book a one-way drop taxi?</summary><p>Yes. Choose one-way / drop, then your pickup city, destination and travel date. You do not need to plan a return trip.</p></details>
-    <details><summary>How is round trip priced?</summary><p>Round trip is â‚¹1 per km less than the one-way rate for the same car. Confirm the total fare, driver allowance, tolls, parking and any other applicable charges before accepting a trip.</p></details>
-    <details><summary>Which locations do you cover?</summary><p>We cover journeys across Tamil Nadu and popular nearby hill destinations such as Ooty, Kodaikanal and Munnar. You can enter any town or city, even if it is not listed in the suggestions. Availability is confirmed for your specific route.</p></details>
-    <details><summary>How accurate are the â€œfromâ€ fares on route pages?</summary><p>They are rough one-way sedan bases using â‚¹15/km Ã— a typical highway distance. Actual km, vehicle rate, driver bata, tolls, parking and night charges can change the total. Always confirm the final fare with our team.</p></details>
-    <details><summary>How is my fare confirmed?</summary><p>Your final quote depends on the route, vehicle and travel schedule. Confirm the total fare, driver allowance, tolls, parking and any other applicable charges with the booking team before accepting a trip.</p></details>
-    <details><summary>Is my trip confirmed when I fill in the form?</summary><p>No. The form prepares your trip details. A booking is confirmed only after the team agrees on availability, pickup details and the final fare with you. We usually reply on WhatsApp within about 15 minutes.</p></details>
+    <details><summary>How is round trip priced?</summary><p>Round trip is ₹1 per km less than the one-way rate for the same car. Confirm the total fare, driver allowance, tolls, parking and any other applicable charges before accepting a trip.</p></details>
+    <details><summary>Which locations do you cover?</summary><p>We cover journeys across Tamil Nadu and popular nearby hill destinations such as Ooty, Kodaikanal and Munnar. You can enter any town or city. Availability is confirmed for your specific route.</p></details>
+    <details><summary>How accurate are the “from” fares?</summary><p>They are rough one-way sedan bases using ₹15/km × a typical highway distance. Tolls, bata and parking can change the total. Always confirm with our team.</p></details>
+    <details><summary>Is my trip confirmed when I fill in the form?</summary><p>No. The form prepares your trip details. A booking is confirmed only after the team agrees on availability, pickup details and the final fare with you.</p></details>
   </div>
 </section>
 
 <section class="closing">
-  <p>ALL ACROSS TAMIL NADU</p>
-  <h2>Your destination.<br>Our next journey.</h2>
-  <a href="#journey">Plan your ride <span>â†—</span></a>
+  <div>
+    <p>ALL ACROSS TAMIL NADU</p>
+    <h2>Your destination.<br>Our next journey.</h2>
+  </div>
+  <a href="#journey">Plan your ride <span>↗</span></a>
 </section>
 </main>
-
-<footer>
-  <a class="brand" href="/"><span class="brand-mark">VK<span>â†—</span></span><span>SIGNATURE <b>TRAVELS</b></span></a>
-  <p>One-way, round trip & drop taxi â€¢ Tamil Nadu & nearby hills<br><a href="tel:+919677075741">+91 96770 75741</a></p>
-  <span>Â© <span id="year"></span> VK Signature Travels</span>
+<footer class="site-footer">
+  <a class="brand" href="/"><span class="brand-mark">VK<span>↗</span></span><span>SIGNATURE <b>TRAVELS</b></span></a>
+  <p>One-way, round trip &amp; drop taxi · Tamil Nadu &amp; nearby hills<br><a href="tel:+919677075741">+91 96770 75741</a></p>
+  <span>© <span id="year"></span> VK Signature Travels</span>
 </footer>
-<p class="photo-credit">Photo: <a href="https://commons.wikimedia.org/wiki/File:Misty_hills_kotagiri_ooty_tamilnadu_-_panoramio.jpg" target="_blank" rel="noopener noreferrer">rajaraman sundaram / Wikimedia Commons</a> Â· <a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a> Â· Cropped</p>
-
+<p class="photo-credit">Photo: <a href="https://commons.wikimedia.org/wiki/File:Misty_hills_kotagiri_ooty_tamilnadu_-_panoramio.jpg" target="_blank" rel="noopener noreferrer">rajaraman sundaram / Wikimedia Commons</a> · <a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a> · Cropped</p>
 <datalist id="cities">
   <option value="Chennai"><option value="Coimbatore"><option value="Madurai"><option value="Trichy"><option value="Salem"><option value="Ooty"><option value="Erode"><option value="Tirunelveli"><option value="Thanjavur"><option value="Vellore"><option value="Kanyakumari"><option value="Tiruppur"><option value="Dindigul"><option value="Rameswaram"><option value="Kodaikanal"><option value="Karur"><option value="Hosur"><option value="Cuddalore"><option value="Munnar">
 </datalist>
-
 <dialog id="trip-dialog">
-  <button class="close-dialog" aria-label="Close trip details">Ã—</button>
+  <button class="close-dialog" aria-label="Close trip details">×</button>
   <p class="eyebrow">ONE STEP CLOSER TO THE ROAD</p>
   <h2>Your journey details</h2>
   <p id="trip-summary"></p>
-  <p class="booking-status">Send this trip on WhatsApp to confirm availability and receive a fare quote. Your ride is confirmed only after our team accepts the booking. We usually reply within 15 minutes.</p>
-  <a class="primary" id="whatsapp-trip" target="_blank" rel="noopener noreferrer">Enquire on WhatsApp â†—</a>
-  <button class="text-button save-secondary" id="save-trip">Save trip details â†“</button>
+  <p class="booking-status">Send this trip on WhatsApp to confirm availability and receive a fare quote. We usually reply within 15 minutes.</p>
+  <a class="primary" id="whatsapp-trip" target="_blank" rel="noopener noreferrer">Enquire on WhatsApp ↗</a>
+  <button class="text-button save-secondary" id="save-trip">Save trip details ↓</button>
   <p class="saved-message" role="status"></p>
 </dialog>
-
 <nav class="contact-float" aria-label="Quick contact">
-  <a class="contact-float-call" href="tel:+919677075741" aria-label="Call VK Signature Travels">
-    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 006.6 6.6l2.2-2.2a1 1 0 011-.25 11.4 11.4 0 003.6.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.4 11.4 0 00.57 3.6 1 1 0 01-.25 1z"/></svg>
-  </a>
-  <a class="contact-float-wa" href="https://wa.me/919677075741" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp VK Signature Travels">
-    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2C6.58 2 2.15 6.4 2.15 11.83c0 1.94.51 3.82 1.48 5.48L2 22l4.85-1.57a10.07 10.07 0 005.19 1.44h.01c5.46 0 9.89-4.4 9.89-9.84C21.94 6.4 17.5 2 12.04 2zm5.77 13.96c-.24.68-1.4 1.25-1.94 1.33-.5.07-1.13.1-1.82-.11-.42-.13-.95-.31-1.64-.6-2.89-1.25-4.77-4.16-4.92-4.35-.14-.19-1.18-1.57-1.18-3 0-1.42.75-2.12 1.01-2.41.27-.29.58-.36.78-.36h.56c.18 0 .42-.07.66.5.24.58.82 2 .89 2.15.07.14.12.32.02.51-.1.2-.14.32-.28.5-.14.17-.3.38-.42.51-.14.14-.29.3-.12.58.16.29.73 1.2 1.57 1.95 1.08.96 1.99 1.26 2.27 1.4.28.14.45.12.61-.07.17-.2.7-.81.88-1.09.19-.28.37-.23.63-.14.26.1 1.64.77 1.92.91.28.14.47.21.54.32.07.12.07.68-.17 1.36z"/></svg>
-  </a>
+  <a class="contact-float-call" href="tel:+919677075741" aria-label="Call VK Signature Travels"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 006.6 6.6l2.2-2.2a1 1 0 011-.25 11.4 11.4 0 003.6.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.4 11.4 0 00.57 3.6 1 1 0 01-.25 1z"/></svg></a>
+  <a class="contact-float-wa" href="https://wa.me/919677075741" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp VK Signature Travels"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2C6.58 2 2.15 6.4 2.15 11.83c0 1.94.51 3.82 1.48 5.48L2 22l4.85-1.57a10.07 10.07 0 005.19 1.44h.01c5.46 0 9.89-4.4 9.89-9.84C21.94 6.4 17.5 2 12.04 2zm5.77 13.96c-.24.68-1.4 1.25-1.94 1.33-.5.07-1.13.1-1.82-.11-.42-.13-.95-.31-1.64-.6-2.89-1.25-4.77-4.16-4.92-4.35-.14-.19-1.18-1.57-1.18-3 0-1.42.75-2.12 1.01-2.41.27-.29.58-.36.78-.36h.56c.18 0 .42-.07.66.5.24.58.82 2 .89 2.15.07.14.12.32.02.51-.1.2-.14.32-.28.5-.14.17-.3.38-.42.51-.14.14-.29.3-.12.58.16.29.73 1.2 1.57 1.95 1.08.96 1.99 1.26 2.27 1.4.28.14.45.12.61-.07.17-.2.7-.81.88-1.09.19-.28.37-.23.63-.14.26.1 1.64.77 1.92.91.28.14.47.21.54.32.07.12.07.68-.17 1.36z"/></svg></a>
 </nav>
 </body>
 </html>

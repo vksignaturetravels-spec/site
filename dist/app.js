@@ -109,16 +109,17 @@ $('swap')?.addEventListener('click', () => {
   $('drop').value = old;
   updateLiveEstimate();
 });
-document.querySelectorAll('[data-from]').forEach((button) =>
-  button.addEventListener('click', () => {
-    if (button.tagName === 'A' && button.getAttribute('href')?.includes('-taxi')) return;
-    $('pickup').value = button.dataset.from;
-    $('drop').value = button.dataset.to;
+document.querySelectorAll('[data-from]').forEach((el) => {
+  if (el === document.body || el.tagName === 'BODY') return;
+  el.addEventListener('click', () => {
+    if (el.tagName === 'A' && el.getAttribute('href')?.includes('-taxi')) return;
+    $('pickup').value = el.dataset.from;
+    $('drop').value = el.dataset.to;
     $('journey').scrollIntoView({ behavior: 'smooth' });
     $('date')?.focus({ preventScroll: true });
     updateLiveEstimate();
-  })
-);
+  });
+});
 document.querySelectorAll('[data-car]').forEach((button) =>
   button.addEventListener('click', () => {
     $('car').value = button.dataset.car;
