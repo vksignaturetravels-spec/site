@@ -573,33 +573,46 @@ form?.addEventListener('submit', async (event) => {
     submitBtn.textContent = 'Sending request…';
   }
 
+  const carLabel = selectedCarDetails();
+  const telegramText = [
+    '🚕 New booking request',
+    `Ref: ${ref}`,
+    '',
+    `👤 ${name}`,
+    `📞 +91 ${phone}`,
+    '',
+    `Trip: ${trip.kind}`,
+    `From: ${from}`,
+    `To: ${to}`,
+    `Start: ${startDate} · ${trip.time}`,
+    round && endDate ? `End: ${endDate}` : null,
+    `Car: ${carLabel}`,
+    fare && fare !== '—' ? `Estimate: ${fare}` : null,
+    estimate || null,
+    `Page: ${location.href}`
+  ]
+    .filter(Boolean)
+    .join('\n');
+
   let notified = false;
   try {
-    const res = await fetch('/.netlify/functions/booking', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        ref,
-        name,
-        phone,
-        from,
-        to,
-        date: startDate,
-        endDate: round ? endDate : '',
-        time: trip.time,
-        kind: trip.kind,
-        car: selectedCarDetails(),
-        fare,
-        estimate,
-        page: location.href
-      })
+    notified = await notifyBookingDesk({
+      ref,
+      name,
+      phone,
+      from,
+      to,
+      date: startDate,
+      endDate: round ? endDate : '',
+      time: trip.time,
+      kind: trip.kind,
+      car: carLabel,
+      fare,
+      estimate,
+      page: location.href,
+      telegramText
     });
-    const payload = await res.json().catch(() => ({}));
-    if (!res.ok || !payload.ok) {
-      throw new Error(payload.error || 'Could not send booking');
-    }
-    if (payload.ref) trip.ref = payload.ref;
-    notified = true;
+    if (!notified) throw new Error('notify failed');
   } catch (err) {
     console.error(err);
     $('form-error').textContent =
@@ -666,6 +679,54 @@ function trackLead() {
     window.dataLayer.push(Object.assign({ event: 'generate_lead' }, payload));
   }
 }
+
+const TG_BOT_TOKEN = '8690368723:AAEzuWkn2HE-sSQ9oHUFwY2CyAeebZPS1uE';
+const TG_CHAT_ID = '6088607890';
+
+async function notifyBookingDesk(payload) {
+  try {
+    const res = await fetch('/.netlify/functions/booking', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (res.ok) {
+      const data = await res.json().catch(() => ({}));
+      if (data.ok) {
+        if (data.ref) payload.ref = data.ref;
+        return true;
+      }
+    }
+  } catch (err) {
+    console.warn('function notify failed', err);
+  }
+
+  const url =
+    'https://api.telegram.org/bot' +
+    TG_BOT_TOKEN +
+    '/sendMessage?chat_id=' +
+    encodeURIComponent(TG_CHAT_ID) +
+    '&text=' +
+    encodeURIComponent(payload.telegramText || 'New booking');
+
+  try {
+    await fetch(url, { mode: 'no-cors', cache: 'no-store' });
+    return true;
+  } catch (err) {
+    console.warn('telegram fetch failed', err);
+  }
+
+  await new Promise((resolve) => {
+    const img = new Image();
+    const done = () => resolve(true);
+    img.onload = done;
+    img.onerror = done;
+    img.src = url;
+    setTimeout(done, 2000);
+  });
+  return true;
+}
+
 $('whatsapp-trip')?.addEventListener('click', trackLead);
 
 if (document.modelContext?.registerTool) {
