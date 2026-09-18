@@ -61,6 +61,10 @@ h1,h2,h3{font-family:'Manrope',sans-serif}
 .live-estimate{margin:10px 0 0;padding-top:10px;border-top:1px solid #dce3d7;font-size:12px;line-height:1.55;color:#3f5348}
 .wa-submit{background:var(--wa)}
 .wa-submit:hover{background:#20bd5a}
+.book-submit{background:var(--green)}
+.book-submit:hover{background:#255a46}
+.book-submit[disabled]{opacity:.65;cursor:wait}
+.booking-ref{font-family:'Manrope',sans-serif;font-weight:800;color:var(--green);font-size:18px;margin:0 0 12px}
 .hero-photo{position:relative;min-height:220px;background:linear-gradient(90deg,rgba(255,255,255,.45),transparent 40%),var(--hero-image) center 50%/cover}
 .hero-photo-tag{position:absolute;left:20px;bottom:20px;padding:8px 14px;border-radius:999px;background:rgba(20,61,50,.88);color:#fff;font-size:10px;letter-spacing:1.4px;font-weight:700}
 

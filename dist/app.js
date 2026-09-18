@@ -509,16 +509,31 @@ $('car')?.addEventListener('change', () => {
   updateLiveEstimate();
 });
 
-form?.addEventListener('submit', (event) => {
+form?.addEventListener('submit', async (event) => {
   event.preventDefault();
   const from = $('pickup').value.trim();
   const to = $('drop').value.trim();
   const startDate = $('date').value;
   const endDate = $('end-date')?.value || '';
   const round = isRoundTrip();
+  const name = $('customer-name')?.value.trim() || '';
+  const phoneRaw = $('customer-phone')?.value.trim() || '';
+  const phoneDigits = phoneRaw.replace(/\D/g, '');
+  const phone = phoneDigits.length === 12 && phoneDigits.startsWith('91') ? phoneDigits.slice(2) : phoneDigits;
+  const submitBtn = form.querySelector('button[type="submit"]');
   $('form-error').textContent = '';
   if (!from || !to) {
     $('form-error').textContent = 'Please choose both pickup and drop locations.';
+    return;
+  }
+  if (!name || name.length < 2) {
+    $('form-error').textContent = 'Please enter your name.';
+    $('customer-name')?.focus();
+    return;
+  }
+  if (!/^[6-9]\d{9}$/.test(phone)) {
+    $('form-error').textContent = 'Enter a valid 10-digit mobile number.';
+    $('customer-phone')?.focus();
     return;
   }
   if (new Date(`${startDate}T${$('time').value}`) <= new Date()) {
@@ -535,16 +550,69 @@ form?.addEventListener('submit', (event) => {
       return;
     }
   }
+
+  const estimate = estimateLine(from, to);
+  const fare = $('fare-amount')?.textContent || '';
+  const ref = `VK-${Date.now().toString(36).toUpperCase().slice(-8)}`;
   trip = {
     from,
     to,
     date: startDate,
     endDate: round ? endDate : '',
     time: $('time').value,
-    kind: tripKindLabel()
+    kind: tripKindLabel(),
+    name,
+    phone,
+    ref,
+    fare,
+    estimate
   };
+
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sending request…';
+  }
+
+  let notified = false;
+  try {
+    const res = await fetch('/.netlify/functions/booking', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ref,
+        name,
+        phone,
+        from,
+        to,
+        date: startDate,
+        endDate: round ? endDate : '',
+        time: trip.time,
+        kind: trip.kind,
+        car: selectedCarDetails(),
+        fare,
+        estimate,
+        page: location.href
+      })
+    });
+    const payload = await res.json().catch(() => ({}));
+    if (!res.ok || !payload.ok) {
+      throw new Error(payload.error || 'Could not send booking');
+    }
+    if (payload.ref) trip.ref = payload.ref;
+    notified = true;
+  } catch (err) {
+    console.error(err);
+    $('form-error').textContent =
+      'Could not reach the booking desk. Please call +91 96770 75741 or try again.';
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Request booking';
+    }
+    return;
+  }
+
   updateWhatsApp();
-  const estimate = estimateLine(from, to);
+  trackLead();
   const startLabel = new Date(trip.date + 'T12:00:00').toLocaleDateString('en-IN', {
     day: 'numeric',
     month: 'long',
@@ -560,20 +628,33 @@ form?.addEventListener('submit', (event) => {
   const dateLine = trip.endDate
     ? `${startLabel} → ${endLabel} · ${trip.time}`
     : `${startLabel} · ${trip.time}`;
-  $('trip-summary').textContent = `${from} → ${to}\n${dateLine}\n${selectedCarDetails()}\n${trip.kind}${estimate ? '\n\n' + estimate : ''}`;
+  if ($('confirm-title')) $('confirm-title').textContent = `Thank you, ${name.split(' ')[0]}`;
+  if ($('booking-ref')) $('booking-ref').textContent = `Booking ref ${trip.ref}`;
+  $('trip-summary').textContent = `${from} → ${to}\n${dateLine}\n${selectedCarDetails()}\n${trip.kind}${fare && fare !== '—' ? `\nEstimate: ${fare}` : ''}${estimate ? `\n\n${estimate}` : ''}\n\n${name} · +91 ${phone}`;
+  if ($('booking-status')) {
+    $('booking-status').textContent = notified
+      ? 'We have received your request. Our team will contact you shortly to confirm availability and the final fare.'
+      : 'Your details are ready. Please call us to confirm.';
+  }
   document.querySelector('.saved-message').textContent = '';
   dialog.showModal();
+  if (submitBtn) {
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Request booking';
+  }
 });
 
 function updateWhatsApp() {
   if (!trip) return;
   const kind = trip.kind || tripKindLabel();
-  const estimate = estimateLine(trip.from, trip.to);
+  const estimate = trip.estimate || estimateLine(trip.from, trip.to);
   const dateLine = trip.endDate
     ? `Start date: ${trip.date}\nEnd date: ${trip.endDate}`
     : `Date: ${trip.date}`;
-  const message = `Hello VK Signature Travels, I would like a quote for a ${kind.toLowerCase()} taxi.\nPickup: ${trip.from}\nDrop: ${trip.to}\n${dateLine}\nTime: ${trip.time}\nTrip type: ${kind}\nPreferred car: ${selectedCarDetails()}${estimate ? '\nEstimate note: ' + estimate : ''}\nPlease confirm availability and the total fare including applicable charges.`;
-  $('whatsapp-trip').href = 'https://wa.me/919677075741?text=' + encodeURIComponent(message);
+  const message = `Hello VK Signature Travels, booking request ${trip.ref || ''}.\nName: ${trip.name || ''}\nPhone: +91 ${trip.phone || ''}\nPickup: ${trip.from}\nDrop: ${trip.to}\n${dateLine}\nTime: ${trip.time}\nTrip type: ${kind}\nPreferred car: ${selectedCarDetails()}${trip.fare ? `\nEstimate: ${trip.fare}` : ''}${estimate ? '\nEstimate note: ' + estimate : ''}\nPlease confirm availability and the total fare.`;
+  if ($('whatsapp-trip')) {
+    $('whatsapp-trip').href = 'https://wa.me/919677075741?text=' + encodeURIComponent(message);
+  }
 }
 
 function trackLead() {
@@ -638,6 +719,7 @@ if (document.modelContext?.registerTool) {
 }
 
 document.querySelector('.close-dialog')?.addEventListener('click', () => dialog.close());
+$('close-confirm')?.addEventListener('click', () => dialog.close());
 dialog?.addEventListener('click', (event) => {
   if (event.target === dialog) {
     const rect = dialog.getBoundingClientRect();
@@ -646,7 +728,7 @@ dialog?.addEventListener('click', (event) => {
 });
 $('save-trip')?.addEventListener('click', () => {
   if (!trip) return;
-  const text = `VK Signature Travels — Trip enquiry\n\nPickup: ${trip.from}\nDrop: ${trip.to}\nStart date: ${trip.date}${trip.endDate ? `\nEnd date: ${trip.endDate}` : ''}\nTime: ${trip.time}\nCar: ${selectedCarDetails()}\nTrip: ${trip.kind}\n\nThis is an enquiry draft, not a confirmed booking. Availability and total fare must be confirmed with the booking team.`;
+  const text = `VK Signature Travels — Trip enquiry\n\nRef: ${trip.ref || ''}\nName: ${trip.name || ''}\nPhone: +91 ${trip.phone || ''}\nPickup: ${trip.from}\nDrop: ${trip.to}\nStart date: ${trip.date}${trip.endDate ? `\nEnd date: ${trip.endDate}` : ''}\nTime: ${trip.time}\nCar: ${selectedCarDetails()}\nTrip: ${trip.kind}\n\nThis is an enquiry draft, not a confirmed booking. Availability and total fare must be confirmed with the booking team.`;
   const url = URL.createObjectURL(new Blob([text], { type: 'text/plain;charset=utf-8' }));
   const link = document.createElement('a');
   link.href = url;

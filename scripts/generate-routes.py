@@ -126,7 +126,7 @@ ROUTES = [
 ]
 
 ROOT = Path(__file__).resolve().parents[1] / 'dist'
-ASSET_V = '16'
+ASSET_V = '17'
 
 FLOAT = '''<nav class="contact-float" aria-label="Quick contact">
   <a class="contact-float-call" href="tel:+919677075741" aria-label="Call VK Signature Travels"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 006.6 6.6l2.2-2.2a1 1 0 011-.25 11.4 11.4 0 003.6.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.4 11.4 0 00.57 3.6 1 1 0 01-.25 1z"/></svg></a>
@@ -134,13 +134,14 @@ FLOAT = '''<nav class="contact-float" aria-label="Quick contact">
 </nav>'''
 
 DIALOG = '''<dialog id="trip-dialog">
-  <button class="close-dialog" aria-label="Close trip details">×</button>
-  <p class="eyebrow">ONE STEP CLOSER TO THE ROAD</p>
-  <h2>Your journey details</h2>
+  <button class="close-dialog" aria-label="Close confirmation">×</button>
+  <p class="eyebrow">BOOKING RECEIVED</p>
+  <h2 id="confirm-title">Request confirmed</h2>
+  <p id="booking-ref" class="booking-ref"></p>
   <p id="trip-summary"></p>
-  <p class="booking-status">Send this trip on WhatsApp to confirm availability and receive a fare quote. We usually reply within 15 minutes.</p>
-  <a class="primary" id="whatsapp-trip" target="_blank" rel="noopener noreferrer">Enquire on WhatsApp ↗</a>
-  <button class="text-button save-secondary" id="save-trip">Save trip details ↓</button>
+  <p class="booking-status" id="booking-status">We have your trip details. Our team will contact you shortly to confirm availability and the final fare.</p>
+  <button class="primary" type="button" id="close-confirm">Done</button>
+  <a class="text-button save-secondary" id="whatsapp-trip" target="_blank" rel="noopener noreferrer">Optional: message on WhatsApp ↗</a>
   <p class="saved-message" role="status"></p>
 </dialog>'''
 
@@ -220,6 +221,10 @@ def booking_form(from_val='', to_val='', fare='—'):
           <option value="Innova Crysta">Innova Crysta (6+1) — ₹22–25/km</option>
         </select>
       </label>
+      <div class="form-row">
+        <label class="field-name"><span>YOUR NAME</span><input id="customer-name" name="customer-name" type="text" required autocomplete="name" enterkeyhint="next" placeholder="Full name"></label>
+        <label class="field-phone"><span>MOBILE</span><input id="customer-phone" name="customer-phone" type="tel" required autocomplete="tel" inputmode="numeric" enterkeyhint="done" placeholder="10-digit mobile" pattern="[6-9][0-9]{9}" maxlength="10"></label>
+      </div>
       <div class="estimate-box">
         <div class="estimate-top">
           <div>
@@ -233,8 +238,8 @@ def booking_form(from_val='', to_val='', fare='—'):
         </div>
         <p id="live-estimate" class="live-estimate" role="status">Search pickup and drop to see a rough base fare for popular routes.</p>
       </div>
-      <button class="primary wa-submit" type="submit">Get quote on WhatsApp <span>↗</span></button>
-      <p class="form-note">No payment on this page. Tolls, bata and parking confirmed on WhatsApp. One-way min 130 km. Round trip min 250 km per day (start→end dates). Out-and-back distance used when higher. ₹1/km less on round trip. We usually reply within 15 minutes.</p>
+      <button class="primary book-submit" type="submit">Request booking</button>
+      <p class="form-note">No payment on this page. After you submit, you will see a confirmation and our desk is notified. One-way min 130 km. Round trip min 250 km per day. Final fare confirmed by our team.</p>
       <p id="form-error" role="alert"></p>
     </form>'''
 
