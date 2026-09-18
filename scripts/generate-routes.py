@@ -126,16 +126,12 @@ ROUTES = [
 ]
 
 ROOT = Path(__file__).resolve().parents[1] / 'dist'
-ASSET_V = '9'
+ASSET_V = '10'
 
 FLOAT = '''<nav class="contact-float" aria-label="Quick contact">
   <a class="contact-float-call" href="tel:+919677075741" aria-label="Call VK Signature Travels"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 006.6 6.6l2.2-2.2a1 1 0 011-.25 11.4 11.4 0 003.6.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.4 11.4 0 00.57 3.6 1 1 0 01-.25 1z"/></svg></a>
   <a class="contact-float-wa" href="https://wa.me/919677075741" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp VK Signature Travels"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2C6.58 2 2.15 6.4 2.15 11.83c0 1.94.51 3.82 1.48 5.48L2 22l4.85-1.57a10.07 10.07 0 005.19 1.44h.01c5.46 0 9.89-4.4 9.89-9.84C21.94 6.4 17.5 2 12.04 2zm5.77 13.96c-.24.68-1.4 1.25-1.94 1.33-.5.07-1.13.1-1.82-.11-.42-.13-.95-.31-1.64-.6-2.89-1.25-4.77-4.16-4.92-4.35-.14-.19-1.18-1.57-1.18-3 0-1.42.75-2.12 1.01-2.41.27-.29.58-.36.78-.36h.56c.18 0 .42-.07.66.5.24.58.82 2 .89 2.15.07.14.12.32.02.51-.1.2-.14.32-.28.5-.14.17-.3.38-.42.51-.14.14-.29.3-.12.58.16.29.73 1.2 1.57 1.95 1.08.96 1.99 1.26 2.27 1.4.28.14.45.12.61-.07.17-.2.7-.81.88-1.09.19-.28.37-.23.63-.14.26.1 1.64.77 1.92.91.28.14.47.21.54.32.07.12.07.68-.17 1.36z"/></svg></a>
 </nav>'''
-
-CITIES = '''<datalist id="cities">
-  <option value="Chennai"><option value="Coimbatore"><option value="Madurai"><option value="Trichy"><option value="Salem"><option value="Ooty"><option value="Erode"><option value="Tirunelveli"><option value="Thanjavur"><option value="Vellore"><option value="Kanyakumari"><option value="Tiruppur"><option value="Dindigul"><option value="Rameswaram"><option value="Kodaikanal"><option value="Karur"><option value="Hosur"><option value="Cuddalore"><option value="Munnar">
-</datalist>'''
 
 DIALOG = '''<dialog id="trip-dialog">
   <button class="close-dialog" aria-label="Close trip details">×</button>
@@ -195,13 +191,13 @@ def footer(home_href, line):
 
 def booking_form(from_val='', to_val='', fare='—'):
     if from_val:
-        from_field = f'<input id="pickup" name="pickup" list="cities" value="{from_val}" required autocomplete="off" enterkeyhint="next">'
+        from_field = f'<input id="pickup" name="pickup" value="{from_val}" required autocomplete="off" enterkeyhint="next" placeholder="Search pickup location">'
     else:
-        from_field = '<input id="pickup" name="pickup" list="cities" placeholder="Chennai" required autocomplete="off" enterkeyhint="next">'
+        from_field = '<input id="pickup" name="pickup" placeholder="Search pickup location" required autocomplete="off" enterkeyhint="next">'
     if to_val:
-        to_field = f'<input id="drop" name="drop" list="cities" value="{to_val}" required autocomplete="off" enterkeyhint="next">'
+        to_field = f'<input id="drop" name="drop" value="{to_val}" required autocomplete="off" enterkeyhint="next" placeholder="Search drop location">'
     else:
-        to_field = '<input id="drop" name="drop" list="cities" placeholder="Madurai" required autocomplete="off" enterkeyhint="next">'
+        to_field = '<input id="drop" name="drop" placeholder="Search drop location" required autocomplete="off" enterkeyhint="next">'
     return f'''<form id="booking-form" class="booking-form">
       <label class="field-from"><span>PICKUP FROM</span>{from_field}</label>
       <button type="button" id="swap" class="swap-btn" aria-label="Swap pickup and drop cities">⇄</button>
@@ -231,7 +227,7 @@ def booking_form(from_val='', to_val='', fare='—'):
             <p id="trip-kind-label">One-way / Drop</p>
           </div>
         </div>
-        <p id="live-estimate" class="live-estimate" role="status">Enter two cities to see a rough base fare for popular routes.</p>
+        <p id="live-estimate" class="live-estimate" role="status">Search pickup and drop to see a rough base fare for popular routes.</p>
       </div>
       <button class="primary wa-submit" type="submit">Get quote on WhatsApp <span>↗</span></button>
       <p class="form-note">No payment on this page. Tolls, bata and parking confirmed on WhatsApp. Round trip is ₹1/km less. We usually reply within 15 minutes.</p>
@@ -379,7 +375,6 @@ def render_home():
 </main>
 {footer('/', 'One-way, round trip &amp; drop taxi · Tamil Nadu &amp; nearby hills')}
 <p class="photo-credit">Photo: <a href="https://commons.wikimedia.org/wiki/File:Misty_hills_kotagiri_ooty_tamilnadu_-_panoramio.jpg" target="_blank" rel="noopener noreferrer">rajaraman sundaram / Wikimedia Commons</a> · <a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a> · Cropped</p>
-{CITIES}
 {DIALOG}
 {FLOAT}
 </body>
@@ -474,7 +469,6 @@ def render_route(r):
 </section>
 </main>
 {footer('../', f"One-way, round trip &amp; drop taxi · {r['from']} to {r['to']}")}
-{CITIES}
 {DIALOG}
 {FLOAT}
 </body>

@@ -80,8 +80,27 @@ window.VK_fareFrom = (km, rate = 15) => window.VK_formatInr(km * rate);
 
 window.VK_routeBySlug = (slug) => window.VK_ROUTES.find((r) => r.slug === slug);
 
-window.VK_routeByCities = (from, to) => {
-  const a = from.trim().toLowerCase();
-  const b = to.trim().toLowerCase();
-  return window.VK_ROUTES.find((r) => r.from.toLowerCase() === a && r.to.toLowerCase() === b);
+window.VK_CITY_ALIASES = {
+  trichy: ['trichy', 'tiruchirappalli', 'tiruchirapalli'],
+  ooty: ['ooty', 'udhagamandalam', 'ootacamund'],
+  chennai: ['chennai', 'madras'],
+  coimbatore: ['coimbatore', 'kovai'],
+  madurai: ['madurai'],
+  munnar: ['munnar'],
+  kodaikanal: ['kodaikanal', 'kodai']
 };
+
+window.VK_placeHasCity = (place, city) => {
+  const text = String(place || '').toLowerCase();
+  if (!text) return false;
+  const key = String(city || '').toLowerCase();
+  const aliases = window.VK_CITY_ALIASES[key] || [key];
+  return aliases.some((alias) => {
+    if (text === alias) return true;
+    if (text.startsWith(alias + ',') || text.startsWith(alias + ' ')) return true;
+    return new RegExp(`(?:^|[,\\s])${alias.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?=$|[,\\s])`, 'i').test(text);
+  });
+};
+
+window.VK_routeByCities = (from, to) =>
+  window.VK_ROUTES.find((r) => window.VK_placeHasCity(from, r.from) && window.VK_placeHasCity(to, r.to));

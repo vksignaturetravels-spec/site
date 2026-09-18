@@ -10,9 +10,9 @@
 <meta name="description" content="Plan your one-way and drop taxi journey across Tamil Nadu with VK Signature Travels. See rough fares for popular routes, choose your car, and get a WhatsApp quote.">
 <link rel="canonical" href="https://vksignaturetravels.com/">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='10' fill='%23143d32'/%3E%3Ctext x='5' y='27' font-family='Arial' font-size='22' font-weight='bold' fill='%23d3ed88'%3EVK%3C/text%3E%3C/svg%3E">
-<link rel="stylesheet" href="style.css?v=9">
-<script src="routes-data.js?v=9" defer></script>
-<script src="app.js?v=9" defer></script>
+<link rel="stylesheet" href="style.css?v=10">
+<script src="routes-data.js?v=10" defer></script>
+<script src="app.js?v=10" defer></script>
 </head>
 <body class="site-home">
 <header class="site-header">
@@ -40,9 +40,9 @@
       <label class="trip-option"><input type="radio" name="trip-kind" value="round-trip"> Round trip</label>
     </div>
     <form id="booking-form" class="booking-form">
-      <label class="field-from"><span>PICKUP FROM</span><input id="pickup" name="pickup" list="cities" placeholder="Chennai" required autocomplete="off" enterkeyhint="next"></label>
+      <label class="field-from"><span>PICKUP FROM</span><input id="pickup" name="pickup" placeholder="Search pickup location" required autocomplete="off" enterkeyhint="next"></label>
       <button type="button" id="swap" class="swap-btn" aria-label="Swap pickup and drop cities">⇄</button>
-      <label class="field-to"><span>DROP TO</span><input id="drop" name="drop" list="cities" placeholder="Madurai" required autocomplete="off" enterkeyhint="next"></label>
+      <label class="field-to"><span>DROP TO</span><input id="drop" name="drop" placeholder="Search drop location" required autocomplete="off" enterkeyhint="next"></label>
       <div class="form-row">
         <label class="field-date"><span>DATE</span><input id="date" name="date" type="date" required></label>
         <label class="field-time"><span>TIME</span><input id="time" name="time" type="time" required></label>
@@ -68,7 +68,7 @@
             <p id="trip-kind-label">One-way / Drop</p>
           </div>
         </div>
-        <p id="live-estimate" class="live-estimate" role="status">Enter two cities to see a rough base fare for popular routes.</p>
+        <p id="live-estimate" class="live-estimate" role="status">Search pickup and drop to see a rough base fare for popular routes.</p>
       </div>
       <button class="primary wa-submit" type="submit">Get quote on WhatsApp <span>↗</span></button>
       <p class="form-note">No payment on this page. Tolls, bata and parking confirmed on WhatsApp. Round trip is ₹1/km less. We usually reply within 15 minutes.</p>
@@ -179,9 +179,6 @@
   <span>© <span id="year"></span> VK Signature Travels</span>
 </footer>
 <p class="photo-credit">Photo: <a href="https://commons.wikimedia.org/wiki/File:Misty_hills_kotagiri_ooty_tamilnadu_-_panoramio.jpg" target="_blank" rel="noopener noreferrer">rajaraman sundaram / Wikimedia Commons</a> · <a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a> · Cropped</p>
-<datalist id="cities">
-  <option value="Chennai"><option value="Coimbatore"><option value="Madurai"><option value="Trichy"><option value="Salem"><option value="Ooty"><option value="Erode"><option value="Tirunelveli"><option value="Thanjavur"><option value="Vellore"><option value="Kanyakumari"><option value="Tiruppur"><option value="Dindigul"><option value="Rameswaram"><option value="Kodaikanal"><option value="Karur"><option value="Hosur"><option value="Cuddalore"><option value="Munnar">
-</datalist>
 <dialog id="trip-dialog">
   <button class="close-dialog" aria-label="Close trip details">×</button>
   <p class="eyebrow">ONE STEP CLOSER TO THE ROAD</p>

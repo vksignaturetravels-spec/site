@@ -1,6 +1,7 @@
 const $ = (id) => document.getElementById(id);
 const form = $('booking-form');
 const dialog = $('trip-dialog');
+const VK_MAPS_KEY = 'AIzaSyCMGXH6Uea9yrGqFO7VVs8jbpjARl3esJI';
 const pad = (n) => String(n).padStart(2, '0');
 const isoDay = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 const CARS = [
@@ -21,6 +22,63 @@ if ($('date')) {
 if ($('time')) $('time').value = `${pad(pickupAt.getHours())}:${pad(pickupAt.getMinutes())}`;
 if ($('year')) $('year').textContent = today.getFullYear();
 let trip = null;
+const placeFields = { pickup: null, drop: null };
+
+function placeLabel(place, fallback) {
+  if (!place) return fallback || '';
+  return place.formatted_address || place.name || fallback || '';
+}
+
+function bindPlaceAutocomplete() {
+  if (!window.google?.maps?.places) return;
+  const opts = {
+    fields: ['formatted_address', 'name', 'geometry', 'address_components', 'place_id'],
+    componentRestrictions: { country: 'in' }
+  };
+  ['pickup', 'drop'].forEach((id) => {
+    const input = $(id);
+    if (!input || input.dataset.placesBound === '1') return;
+    input.dataset.placesBound = '1';
+    input.setAttribute('autocomplete', 'off');
+    const ac = new google.maps.places.Autocomplete(input, opts);
+    ac.addListener('place_changed', () => {
+      const place = ac.getPlace();
+      placeFields[id] = place || null;
+      const label = placeLabel(place, input.value.trim());
+      if (label) input.value = label;
+      updateLiveEstimate();
+    });
+    input.addEventListener('input', () => {
+      placeFields[id] = null;
+    });
+  });
+}
+
+function loadGooglePlaces() {
+  if (!$('pickup') || !$('drop')) return;
+  if (window.google?.maps?.places) {
+    bindPlaceAutocomplete();
+    return;
+  }
+  if (document.getElementById('vk-google-maps')) return;
+  window.initVkPlaces = bindPlaceAutocomplete;
+  const script = document.createElement('script');
+  script.id = 'vk-google-maps';
+  script.async = true;
+  script.defer = true;
+  script.src =
+    'https://maps.googleapis.com/maps/api/js?key=' +
+    encodeURIComponent(VK_MAPS_KEY) +
+    '&libraries=places&callback=initVkPlaces&loading=async';
+  script.onerror = () => {
+    const el = $('live-estimate');
+    if (el && !el.dataset.mapsError) {
+      el.dataset.mapsError = '1';
+      el.textContent = 'Location suggestions unavailable. You can still type pickup and drop addresses.';
+    }
+  };
+  document.head.appendChild(script);
+}
 
 function isRoundTrip() {
   return document.querySelector('input[name="trip-kind"]:checked')?.value === 'round-trip';
@@ -85,7 +143,7 @@ function updateLiveEstimate() {
   if ($('trip-kind-label')) $('trip-kind-label').textContent = round ? 'Round trip' : 'One-way / Drop';
   if (!el) return;
   if (!from || !to || from.toLowerCase() === to.toLowerCase()) {
-    el.textContent = 'Enter two cities to see a rough base fare for popular routes.';
+    el.textContent = 'Search pickup and drop to see a rough base fare for popular routes.';
     return;
   }
   const line = estimateLine(from, to);
@@ -107,6 +165,9 @@ $('swap')?.addEventListener('click', () => {
   const old = $('pickup').value;
   $('pickup').value = $('drop').value;
   $('drop').value = old;
+  const oldPlace = placeFields.pickup;
+  placeFields.pickup = placeFields.drop;
+  placeFields.drop = oldPlace;
   updateLiveEstimate();
 });
 document.querySelectorAll('[data-from]').forEach((el) => {
@@ -152,11 +213,11 @@ form?.addEventListener('submit', (event) => {
   const to = $('drop').value.trim();
   $('form-error').textContent = '';
   if (!from || !to) {
-    $('form-error').textContent = 'Please enter both pickup and drop cities.';
+    $('form-error').textContent = 'Please choose both pickup and drop locations.';
     return;
   }
   if (from.toLowerCase() === to.toLowerCase()) {
-    $('form-error').textContent = 'Choose a different drop city.';
+    $('form-error').textContent = 'Choose a different drop location.';
     return;
   }
   if (new Date(`${$('date').value}T${$('time').value}`) <= new Date()) {
@@ -276,3 +337,5 @@ document.querySelectorAll('[data-fill-route-fares]').forEach((grid) => {
     })
     .join('');
 });
+
+loadGooglePlaces();

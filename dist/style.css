@@ -147,6 +147,15 @@ dialog .primary{width:100%;min-height:52px}
 #trip-dialog[open]~.contact-float{visibility:hidden;pointer-events:none}
 #nl-badge-frame,#nl-hud-frame{display:none!important}
 
+/* Google Places dropdown above sticky header */
+.pac-container{z-index:10000!important;font-family:'DM Sans',sans-serif;border-radius:8px;margin-top:4px;box-shadow:0 10px 28px rgba(0,0,0,.14);border:1px solid var(--line);background:#fff}
+.pac-item{padding:10px 12px;font-size:14px;line-height:1.35;cursor:pointer;border-top:1px solid #eef1ec}
+.pac-item:first-child{border-top:0}
+.pac-item:hover,.pac-item-selected{background:#edf3e8}
+.pac-item-query{font-size:14px;color:var(--ink)}
+.pac-matched{font-weight:700;color:var(--green)}
+.pac-icon{margin-top:2px}
+
 body.site-route{--hero-image:url('../hero.jpg')}
 
 @media(min-width:900px){
