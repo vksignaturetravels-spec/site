@@ -1,3 +1,4 @@
+# deploy-stamp: trigger-telegram-live
 [build]
   publish = "dist"
   command = "node -e \"console.log('static build ok')\""
