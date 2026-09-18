@@ -19,10 +19,34 @@ if ($('date')) {
   $('date').min = isoDay(today);
   $('date').value = isoDay(pickupAt);
 }
+if ($('end-date')) {
+  $('end-date').min = isoDay(today);
+  const defaultEnd = new Date(pickupAt);
+  defaultEnd.setDate(defaultEnd.getDate() + 1);
+  $('end-date').value = isoDay(defaultEnd);
+}
 if ($('time')) $('time').value = `${pad(pickupAt.getHours())}:${pad(pickupAt.getMinutes())}`;
 if ($('year')) $('year').textContent = today.getFullYear();
 let trip = null;
 const placeFields = { pickup: null, drop: null };
+
+function syncEndDateField() {
+  const field = $('end-date-field');
+  const input = $('end-date');
+  if (!field || !input) return;
+  const round = isRoundTrip();
+  field.hidden = !round;
+  input.required = round;
+  if (round) {
+    const start = $('date')?.value || isoDay(today);
+    input.min = start;
+    if (!input.value || input.value < start) {
+      const next = new Date(`${start}T12:00:00`);
+      next.setDate(next.getDate() + 1);
+      input.value = isoDay(next);
+    }
+  }
+}
 
 function placeLabel(place, fallback) {
   if (!place) return fallback || '';
@@ -430,10 +454,19 @@ document.querySelectorAll('[data-car]').forEach((button) =>
 document.querySelectorAll('input[name="trip-kind"]').forEach((input) =>
   input.addEventListener('change', () => {
     syncCarOptions();
+    syncEndDateField();
     updateWhatsApp();
     updateLiveEstimate();
   })
 );
+$('date')?.addEventListener('change', () => {
+  const start = $('date').value;
+  if ($('end-date') && start) {
+    $('end-date').min = start;
+    if ($('end-date').value && $('end-date').value < start) $('end-date').value = start;
+  }
+});
+syncEndDateField();
 let estimateTimer = null;
 ['pickup', 'drop'].forEach((id) => {
   $(id)?.addEventListener('input', () => {
@@ -451,19 +484,54 @@ form?.addEventListener('submit', (event) => {
   event.preventDefault();
   const from = $('pickup').value.trim();
   const to = $('drop').value.trim();
+  const startDate = $('date').value;
+  const endDate = $('end-date')?.value || '';
+  const round = isRoundTrip();
   $('form-error').textContent = '';
   if (!from || !to) {
     $('form-error').textContent = 'Please choose both pickup and drop locations.';
     return;
   }
-  if (new Date(`${$('date').value}T${$('time').value}`) <= new Date()) {
+  if (new Date(`${startDate}T${$('time').value}`) <= new Date()) {
     $('form-error').textContent = 'Please choose a pickup date and time in the future.';
     return;
   }
-  trip = { from, to, date: $('date').value, time: $('time').value, kind: tripKindLabel() };
+  if (round) {
+    if (!endDate) {
+      $('form-error').textContent = 'Please choose a round-trip end date.';
+      return;
+    }
+    if (endDate < startDate) {
+      $('form-error').textContent = 'End date must be on or after the start date.';
+      return;
+    }
+  }
+  trip = {
+    from,
+    to,
+    date: startDate,
+    endDate: round ? endDate : '',
+    time: $('time').value,
+    kind: tripKindLabel()
+  };
   updateWhatsApp();
   const estimate = estimateLine(from, to);
-  $('trip-summary').textContent = `${from} → ${to}\n${new Date(trip.date + 'T12:00:00').toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })} · ${trip.time}\n${selectedCarDetails()}\n${trip.kind}${estimate ? '\n\n' + estimate : ''}`;
+  const startLabel = new Date(trip.date + 'T12:00:00').toLocaleDateString('en-IN', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  });
+  const endLabel =
+    trip.endDate &&
+    new Date(trip.endDate + 'T12:00:00').toLocaleDateString('en-IN', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    });
+  const dateLine = trip.endDate
+    ? `${startLabel} → ${endLabel} · ${trip.time}`
+    : `${startLabel} · ${trip.time}`;
+  $('trip-summary').textContent = `${from} → ${to}\n${dateLine}\n${selectedCarDetails()}\n${trip.kind}${estimate ? '\n\n' + estimate : ''}`;
   document.querySelector('.saved-message').textContent = '';
   dialog.showModal();
 });
@@ -472,7 +540,10 @@ function updateWhatsApp() {
   if (!trip) return;
   const kind = trip.kind || tripKindLabel();
   const estimate = estimateLine(trip.from, trip.to);
-  const message = `Hello VK Signature Travels, I would like a quote for a ${kind.toLowerCase()} taxi.\nPickup: ${trip.from}\nDrop: ${trip.to}\nDate: ${trip.date}\nTime: ${trip.time}\nTrip type: ${kind}\nPreferred car: ${selectedCarDetails()}${estimate ? '\nEstimate note: ' + estimate : ''}\nPlease confirm availability and the total fare including applicable charges.`;
+  const dateLine = trip.endDate
+    ? `Start date: ${trip.date}\nEnd date: ${trip.endDate}`
+    : `Date: ${trip.date}`;
+  const message = `Hello VK Signature Travels, I would like a quote for a ${kind.toLowerCase()} taxi.\nPickup: ${trip.from}\nDrop: ${trip.to}\n${dateLine}\nTime: ${trip.time}\nTrip type: ${kind}\nPreferred car: ${selectedCarDetails()}${estimate ? '\nEstimate note: ' + estimate : ''}\nPlease confirm availability and the total fare including applicable charges.`;
   $('whatsapp-trip').href = 'https://wa.me/919677075741?text=' + encodeURIComponent(message);
 }
 
@@ -546,7 +617,7 @@ dialog?.addEventListener('click', (event) => {
 });
 $('save-trip')?.addEventListener('click', () => {
   if (!trip) return;
-  const text = `VK Signature Travels — Trip enquiry\n\nPickup: ${trip.from}\nDrop: ${trip.to}\nDate: ${trip.date}\nTime: ${trip.time}\nCar: ${selectedCarDetails()}\nTrip: ${trip.kind}\n\nThis is an enquiry draft, not a confirmed booking. Availability and total fare must be confirmed with the booking team.`;
+  const text = `VK Signature Travels — Trip enquiry\n\nPickup: ${trip.from}\nDrop: ${trip.to}\nStart date: ${trip.date}${trip.endDate ? `\nEnd date: ${trip.endDate}` : ''}\nTime: ${trip.time}\nCar: ${selectedCarDetails()}\nTrip: ${trip.kind}\n\nThis is an enquiry draft, not a confirmed booking. Availability and total fare must be confirmed with the booking team.`;
   const url = URL.createObjectURL(new Blob([text], { type: 'text/plain;charset=utf-8' }));
   const link = document.createElement('a');
   link.href = url;

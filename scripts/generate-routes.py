@@ -126,7 +126,7 @@ ROUTES = [
 ]
 
 ROOT = Path(__file__).resolve().parents[1] / 'dist'
-ASSET_V = '14'
+ASSET_V = '15'
 
 FLOAT = '''<nav class="contact-float" aria-label="Quick contact">
   <a class="contact-float-call" href="tel:+919677075741" aria-label="Call VK Signature Travels"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 006.6 6.6l2.2-2.2a1 1 0 011-.25 11.4 11.4 0 003.6.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.4 11.4 0 00.57 3.6 1 1 0 01-.25 1z"/></svg></a>
@@ -203,9 +203,13 @@ def booking_form(from_val='', to_val='', fare='—'):
       <button type="button" id="swap" class="swap-btn" aria-label="Swap pickup and drop cities">⇄</button>
       <label class="field-to"><span>DROP TO</span>{to_field}</label>
       <div class="form-row">
-        <label class="field-date"><span>DATE</span><input id="date" name="date" type="date" required></label>
+        <label class="field-date"><span>START DATE</span><input id="date" name="date" type="date" required></label>
         <label class="field-time"><span>TIME</span><input id="time" name="time" type="time" required></label>
       </div>
+      <label class="field-end-date" id="end-date-field" hidden>
+        <span>END DATE</span>
+        <input id="end-date" name="end-date" type="date">
+      </label>
       <label class="field-car"><span>SELECT CAR</span>
         <select id="car" name="car" required>
           <option value="Sedan CNG">Sedan CNG (4+1) — ₹15/km</option>

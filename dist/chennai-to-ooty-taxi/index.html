@@ -11,9 +11,9 @@
 <meta name="keywords" content="chennai to ooty taxi, chennai to ooty cab">
 <link rel="canonical" href="https://vksignaturetravels.com/chennai-to-ooty-taxi/">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='10' fill='%23143d32'/%3E%3Ctext x='5' y='27' font-family='Arial' font-size='22' font-weight='bold' fill='%23d3ed88'%3EVK%3C/text%3E%3C/svg%3E">
-<link rel="stylesheet" href="../style.css?v=14">
-<script src="../routes-data.js?v=14" defer></script>
-<script src="../app.js?v=14" defer></script>
+<link rel="stylesheet" href="../style.css?v=15">
+<script src="../routes-data.js?v=15" defer></script>
+<script src="../app.js?v=15" defer></script>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -56,9 +56,13 @@
       <button type="button" id="swap" class="swap-btn" aria-label="Swap pickup and drop cities">⇄</button>
       <label class="field-to"><span>DROP TO</span><input id="drop" name="drop" value="Ooty" required autocomplete="off" enterkeyhint="next" placeholder="Search drop location"></label>
       <div class="form-row">
-        <label class="field-date"><span>DATE</span><input id="date" name="date" type="date" required></label>
+        <label class="field-date"><span>START DATE</span><input id="date" name="date" type="date" required></label>
         <label class="field-time"><span>TIME</span><input id="time" name="time" type="time" required></label>
       </div>
+      <label class="field-end-date" id="end-date-field" hidden>
+        <span>END DATE</span>
+        <input id="end-date" name="end-date" type="date">
+      </label>
       <label class="field-car"><span>SELECT CAR</span>
         <select id="car" name="car" required>
           <option value="Sedan CNG">Sedan CNG (4+1) — ₹15/km</option>
